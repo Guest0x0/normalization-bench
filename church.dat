@@ -1,0 +1,49 @@
+
+===== expr: church/10+10 =====
+normalizer naive_subst: conv=0.000000, norm=0.000030, rb=0.000000, tot=0.000030
+normalizer NBE.HOAS.list: conv=0.000001, norm=0.000000, rb=0.000013, tot=0.000014
+normalizer NBE.HOAS.map: conv=0.000001, norm=0.000000, rb=0.000004, tot=0.000005
+normalizer NBE/closure/list: conv=0.000001, norm=0.000000, rb=0.000007, tot=0.000008
+normalizer NBE/closure/map: conv=0.000001, norm=0.000000, rb=0.000004, tot=0.000005
+
+===== expr: church/50+50 =====
+normalizer naive_subst: conv=0.000001, norm=0.000741, rb=0.000001, tot=0.000743
+normalizer NBE.HOAS.list: conv=0.000001, norm=0.000000, rb=0.001197, tot=0.001198
+normalizer NBE.HOAS.map: conv=0.000001, norm=0.000002, rb=0.000007, tot=0.000010
+normalizer NBE/closure/list: conv=0.000001, norm=0.000000, rb=0.000039, tot=0.000040
+normalizer NBE/closure/map: conv=0.000001, norm=0.000000, rb=0.000008, tot=0.000009
+
+===== expr: church/100+100 =====
+normalizer naive_subst: conv=0.000001, norm=0.002875, rb=0.000001, tot=0.002877
+normalizer NBE.HOAS.list: conv=0.000000, norm=0.000001, rb=0.000133, tot=0.000134
+normalizer NBE.HOAS.map: conv=0.000002, norm=0.000000, rb=0.000013, tot=0.000015
+normalizer NBE/closure/list: conv=0.000001, norm=0.000000, rb=0.000353, tot=0.000354
+normalizer NBE/closure/map: conv=0.000000, norm=0.000002, rb=0.000011, tot=0.000013
+
+===== expr: church/500+500 =====
+normalizer naive_subst: conv=0.000000, norm=0.092242, rb=0.000002, tot=0.092244
+normalizer NBE.HOAS.list: conv=0.000000, norm=0.000001, rb=0.014791, tot=0.014792
+normalizer NBE.HOAS.map: conv=0.000001, norm=0.000000, rb=0.000044, tot=0.000045
+normalizer NBE/closure/list: conv=0.000001, norm=0.000000, rb=0.021715, tot=0.021716
+normalizer NBE/closure/map: conv=0.000001, norm=0.000001, rb=0.000043, tot=0.000045
+
+===== expr: church/1000+1000 =====
+normalizer naive_subst: conv=0.000000, norm=0.254938, rb=0.000001, tot=0.254939
+normalizer NBE.HOAS.list: conv=0.000002, norm=0.000000, rb=0.099578, tot=0.099580
+normalizer NBE.HOAS.map: conv=0.000001, norm=0.000000, rb=0.000089, tot=0.000090
+normalizer NBE/closure/list: conv=0.000001, norm=0.000000, rb=0.078567, tot=0.078568
+normalizer NBE/closure/map: conv=0.000002, norm=0.000000, rb=0.000091, tot=0.000093
+
+===== expr: church/5000+5000 =====
+normalizer naive_subst: conv=0.000001, norm=8.179291, rb=0.000002, tot=8.179294
+normalizer NBE.HOAS.list: conv=0.000001, norm=0.000001, rb=2.489199, tot=2.489201
+normalizer NBE.HOAS.map: conv=0.000004, norm=0.000000, rb=0.000482, tot=0.000486
+normalizer NBE/closure/list: conv=0.000001, norm=0.000000, rb=2.838550, tot=2.838551
+normalizer NBE/closure/map: conv=0.000002, norm=0.000000, rb=0.000680, tot=0.000682
+
+===== expr: church/10000+10000 =====
+normalizer naive_subst: conv=0.000001, norm=66.648301, rb=0.000002, tot=66.648304
+normalizer NBE.HOAS.list: conv=0.000006, norm=0.000000, rb=31.811225, tot=31.811231
+normalizer NBE.HOAS.map: conv=0.000181, norm=0.000001, rb=0.006078, tot=0.006260
+normalizer NBE/closure/list: conv=0.000016, norm=0.000001, rb=14.308105, tot=14.308122
+normalizer NBE/closure/map: conv=0.000093, norm=0.000001, rb=0.002131, tot=0.002225

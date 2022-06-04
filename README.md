@@ -52,16 +52,16 @@ found in [[4]](#4)
 ## References
 
 <a id="1">[1]</a>
-[](https://oa.upm.es/30153/1/30153nogueiraINVES_MEM_2013.pdf)
+<https://oa.upm.es/30153/1/30153nogueiraINVES_MEM_2013.pdf>
 
 <a id="2">[2]</a>
-[](https://dl.acm.org/doi/10.1007/s10990-007-9015-z)
+<https://dl.acm.org/doi/10.1007/s10990-007-9015-z>
 
 <a id="3">[3]</a>
-[](https://hal.inria.fr/hal-01499941/document)
+<https://hal.inria.fr/hal-01499941/document>
 
 <a id="4">[4]</a>
-[](https://www.ccs.neu.edu/home/wand/papers/shivers-wand-10.pdf)
+<https://www.ccs.neu.edu/home/wand/papers/shivers-wand-10.pdf>
 
 <a id="5">[5]</a>
-[](https://dl.acm.org/doi/book/10.5555/868417)
+<https://dl.acm.org/doi/book/10.5555/868417>

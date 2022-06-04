@@ -1,5 +1,6 @@
 
 open Syntax
+open Common
 
 type value =
     | VLvl of int
@@ -20,43 +21,63 @@ let rec quote level value =
 
 
 
-let rec eval_list (env, level) tm =
+let rec eval_list env tm =
     match tm with
-    | Idx idx ->
-        begin match List.nth env idx with
-        | value               -> value
-        | exception Not_found -> VLvl(level - idx - 1)
-        end
+    | Idx idx -> List.nth env idx
     | Lam tm' ->
-        VLam(fun vx -> eval_list (vx :: env, level + 1) tm')
+        VLam(fun vx -> eval_list (vx :: env) tm')
     | App(tf, ta) ->
-        apply_val (eval_list (env, level) tf) (eval_list (env, level) ta)
+        apply_val (eval_list env tf) (eval_list env ta)
 
 
-module IMap = Map.Make(Int)
-
-let rec eval_map (env, level) tm =
+let rec eval_map env tm =
     match tm with
-    | Idx idx ->
-        begin match IMap.find idx env with
-        | value               -> value
-        | exception Not_found -> VLvl(level - idx - 1)
-        end
+    | Idx idx -> TMap.get idx env
     | Lam tm' ->
-        VLam(fun vx -> eval_map (IMap.add level vx env, level + 1) tm')
+        VLam(fun vx -> eval_map (TMap.push vx env) tm')
     | App(tf, ta) ->
-        apply_val (eval_map (env, level) tf) (eval_map (env, level) ta)
+        apply_val (eval_map env tf) (eval_map env ta)
 
 
 
-let normalizer_list =
-    Norm { name      = "NBE.HOAS.list"
-         ; of_term   = eval_list ([], 0)
+
+
+(*
+module AMap = ArrMap(struct
+        type t = value
+        let garbage = VLvl(-1)
+    end)
+
+let garbage = VLvl (-1)
+
+let rec eval_arr env tm =
+    match tm with
+    | Idx idx -> AMap.get idx env
+    | Lam tm' ->
+        let env' = AMap.copy env in
+        VLam(fun vx -> AMap.push vx env'; eval_arr env' tm')
+    | App(f, a) ->
+        apply_val (eval_arr env f) (eval_arr env a)
+*)
+
+
+
+let load () =
+    register_normalizer "NBE.HOAS.list" @@ Norm {
+        of_term   = eval_list [];
+        normalize = Fun.id;
+        readback  = quote 0
+    };
+    register_normalizer "NBE.HOAS.tree" @@ Norm {
+        of_term   = eval_map TMap.empty;
+        normalize = Fun.id;
+        readback  = quote 0
+    }
+
+(*
+let normalizer_arr =
+    Norm { name      = "NBE.HOAS.array"
+         ; of_term   = (fun tm -> eval_arr (AMap.empty ()) tm)
          ; normalize = Fun.id
          ; readback  = quote 0 }
-
-let normalizer_map =
-    Norm { name      = "NBE.HOAS.map"
-         ; of_term   = eval_map (IMap.empty, 0)
-         ; normalize = Fun.id
-         ; readback  = quote 0 }
+*)

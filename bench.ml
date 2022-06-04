@@ -2,66 +2,65 @@
 open Syntax
 
 type time_stat =
-    { mutable convert   : float
-    ; mutable normalize : float
-    ; mutable readback  : float }
+    { convert   : float
+    ; normalize : float
+    ; readback  : float }
 
-let bench normalizers ?(n_iter=100) tm =
-    let times= normalizers |> Array.map @@ fun _ ->
-        { convert = 0.0; normalize = 0.0; readback = 0.0 }
-    in
-    for _ = 1 to n_iter do
-        normalizers |> Array.iteri begin fun i (Norm normalizer) ->
-            let t0 = Sys.time () in
-            let rep = normalizer.of_term tm in
-            let t1 = Sys.time () in
-            let rep' = normalizer.normalize rep in
-            let t2 = Sys.time () in
-            let _ = normalizer.readback rep' in
-            let t3 = Sys.time () in
-            let time = times.(i) in
-            time.convert   <- time.convert   +. t1 -. t0;
-            time.normalize <- time.normalize +. t2 -. t1;
-            time.readback  <- time.readback  +. t3 -. t2
-        end
-    done;
-    times |> Array.iter begin fun time ->
-        time.convert   <- time.convert   /. Float.of_int n_iter;
-        time.normalize <- time.normalize /. Float.of_int n_iter;
-        time.readback  <- time.readback  /. Float.of_int n_iter;
-    end;
-    times
+type normalizer_state = Fine | TE | WrongAns
+
+type test_bench =
+    { name     : string
+    ; terms    : int -> term * term }
 
 
 
-let normalizers =
-    [| Naive_subst.normalizer
-     ; Nbe_hoas.normalizer_list
-     ; Nbe_hoas.normalizer_map
-     ; Nbe_closure.normalizer_list
-     ; Nbe_closure.normalizer_map |]
-
-let terms =
-    let open Syntax in
-    [| "church/10+10", App(App(church_add, church 10), church 10)
-     ; "church/50+50", App(App(church_add, church 50), church 50)
-     ; "church/100+100", App(App(church_add, church 100), church 100)
-     ; "church/500+500", App(App(church_add, church 500), church 500)
-     ; "church/1000+1000", App(App(church_add, church 1000), church 1000)
-     ; "church/5000+5000", App(App(church_add, church 5000), church 5000)
-     ; "church/10000+10000", App(App(church_add, church 10000), church 10000) |]
+let benches = [
+    { name  = "church_add"
+    ; terms = Syntax.(fun size ->
+              ( App(App(church_add, church size), church size)
+              , church (size + size) )) };
+    { name  = "church_mul"
+    ; terms = Syntax.(fun size ->
+              ( App(App(church_mul, church size), church size)
+              , church (size * size) )) };
+    { name  = "iterated_id"
+    ; terms =
+          let rec loop size =
+              if size <= 1
+              then Syntax.id
+              else Syntax.App(loop (size - 1), Syntax.id)
+          in fun size -> (loop size, Syntax.id) }
+]
 
 
 let _ =
-    let _ = Random.self_init () in
-    terms |> Array.iter begin fun (name, term) ->
-        let times = bench normalizers ~n_iter:1 term in
-        Format.printf "\n===== expr: %s =====\n" name;
-        Format.print_flush ();
-        normalizers |> Array.iteri @@ fun i (Norm { name; _ }) ->
-        let time = times.(i) in
-        Format.printf "normalizer %s: conv=%f, norm=%f, rb=%f, tot=%f@ "
-            name time.convert time.normalize time.readback
-            (time.convert +. time.normalize +. time.readback);
-        Format.print_flush ()
-    end;
+    Naive_subst.load ();
+    Nbe_hoas.load ();
+    Nbe_closure.load ();
+    Nbe_pushenter.load ();
+    Nbe_lazy.load ();
+    Abstract_machine.load ();
+    Syntax.normalizers := List.rev !Syntax.normalizers;
+    if Sys.argv.(1) = "list-normalizers" then
+        ( List.iter (fun (name, _)  -> print_endline name)
+                    !Syntax.normalizers
+        ; exit 0 );
+    (* let seed = int_of_string Sys.argv.(1) in *)
+    let (Norm normalizer) = List.assoc Sys.argv.(2) !Syntax.normalizers in
+    let bench = List.find (fun bench -> bench.name = Sys.argv.(3)) benches in
+    let size = int_of_string Sys.argv.(4) in
+    let tm, expected = bench.terms size in
+    let t0 = Sys.time () in
+    let rep = normalizer.of_term tm in
+    let t1 = Sys.time () in
+    let rep' = normalizer.normalize rep in
+    let t2 = Sys.time () in
+    let nf = normalizer.readback rep' in
+    let t3 = Sys.time () in
+    if Hashtbl.hash expected <> Hashtbl.hash nf then
+        Format.printf "wrong answer\n"
+    else
+        Format.printf
+            "conv=%f, norm=%f, quote=%f, total=%f\n"
+            (t1 -. t0) (t2 -. t1) (t3 -. t2) (t3 -. t0);
+    Format.print_flush ()

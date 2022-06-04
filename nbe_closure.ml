@@ -1,38 +1,53 @@
 
 open Syntax
+open Common
 
-module Make(Env : sig
-        type 'a t
-
-        val add  : int -> 'a -> 'a t -> 'a t
-        val find : int -> 'a t -> 'a
-    end) =
-struct
+module ListEnv = struct
     type value =
         | VLvl of int
-        | VLam of (value Env.t * int * term)
+        | VLam of (value list * term)
         | VApp of value * value
 
 
-    let rec eval (env, level) tm =
+    let rec eval env tm =
         match tm with
-        | Idx idx ->
-            begin match Env.find idx env with
-            | value               -> value
-            | exception Not_found -> VLvl(level - idx - 1)
-            end
-        | Lam tm' ->
-            VLam(env, level, tm')
-        | App(tf, ta) ->
-            apply_val (eval (env, level) tf) (eval (env, level) ta)
+        | Idx idx   -> List.nth env idx
+        | Lam tm'   -> VLam(env, tm')
+        | App(f, a) -> apply_val (eval env f) (eval env a)
 
     and apply_val vf va =
         match vf with
         | VLam clo -> apply_clo clo va
         | _        -> VApp(vf, va)
 
-    and apply_clo (env, level, body) va =
-        eval (Env.add level va env, level + 1) body
+    and apply_clo (env, body) va = eval (va :: env) body
+
+    let rec quote level value =
+        match value with
+        | VLvl lvl     -> Idx(level - lvl - 1)
+        | VLam clo     -> Lam(quote (level + 1) (apply_clo clo (VLvl level)))
+        | VApp(vf, va) -> App(quote level vf, quote level va)
+end
+
+module TMapEnv = struct
+    type value =
+        | VLvl of int
+        | VLam of (value TMap.t * term)
+        | VApp of value * value
+
+
+    let rec eval env tm =
+        match tm with
+        | Idx idx   -> TMap.get idx env
+        | Lam tm'   -> VLam(env, tm')
+        | App(f, a) -> apply_val (eval env f) (eval env a)
+
+    and apply_val vf va =
+        match vf with
+        | VLam clo -> apply_clo clo va
+        | _        -> VApp(vf, va)
+
+    and apply_clo (env, body) va = eval (TMap.push va env) body
 
     let rec quote level value =
         match value with
@@ -42,24 +57,14 @@ struct
 end
 
 
-module ListEnv = Make(struct
-        type 'a t = 'a list
-        let add _ v env = v :: env
-        let find idx env = List.nth env idx
-    end)
-
-let normalizer_list =
-    Norm { name      = "NBE/closure/list"
-         ; of_term   = ListEnv.eval ([], 0)
-         ; normalize = Fun.id
-         ; readback  = ListEnv.quote 0 }
-
-
-module IMap = Map.Make(Int)
-module MapEnv = Make(IMap)
-
-let normalizer_map =
-    Norm { name      = "NBE/closure/map"
-         ; of_term   = MapEnv.eval (IMap.empty, 0)
-         ; normalize = Fun.id
-         ; readback  = MapEnv.quote 0 }
+let load () =
+    register_normalizer "NBE.closure.list" @@ Norm {
+        of_term   = ListEnv.eval [];
+        normalize = Fun.id;
+        readback  = ListEnv.quote 0
+    };
+    register_normalizer "NBE.closure.tree" @@ Norm {
+        of_term   = TMapEnv.eval TMap.empty;
+        normalize = Fun.id;
+        readback  = TMapEnv.quote 0
+    }

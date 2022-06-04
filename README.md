@@ -14,13 +14,31 @@ on the algorithm's internal rep. may be added.
 
 ## Algorithms
 
-- `naive_subst`: naive normal-order capture-avoiding substitution
-- `nbe_hoas`: Normalization By Evaluation (NBE), using HOAS to represent closures.
-There are variants using list and OCaml's map to represent the environment
-- `nbe_closure`: NBE, using raw lambda terms to representi closures。
+- `subst.naive` (in `naive_subst.ml`):
+naive normal-order capture-avoiding substitution
+- `NBE.HOAS.list|tree` (in `nbe_hoas.ml`):
+Normalization By Evaluation (NBE), using HOAS to represent closures.
+There are variants using list and OCaml's binary tree based map
+to represent the environment
+- `NBE.HOAS.closure.list|tree` (in `nbe_closure.ml`):
+NBE, using raw lambda terms to represent closures.
 Come with two favors of environment data structure too
-- (TODO) NBE with uncurry optimization (eval/apply or push/enter)
-- (TODO) fully lazy, in-place, graph reduction
+- `NBE.pushenter` (in `nbe_pushenter.ml`)
+NBE with a push/enter style uncurrying.
+A separate argument stack is maintained,
+and closures are only allocated when the argument stack is empty.
+(Currently this does not seem to perform well.
+I doubt that I am doing it wrong)
+- `AM.Crégut` (in `abstract_machine.ml`):
+The strongly reducing krivine abstract machine of Pierre Crégut.
+I found it in [[1]](#1),
+and the original paper is [[2]](#2).
+- (TODO) an eval/apply variant of uncurry optimization
+- (TODO) some bytecode based approaches.
+For example the modified ZAM used in Coq [[3]](#3)
+- (TODO) fully lazy, in-place, graph reduction,
+found in [[4]](#4)
+- (TODO) the suspension lambda calculus in [[5]](#5)
 
 
 ## Test Data
@@ -29,3 +47,21 @@ Come with two favors of environment data structure too
 - (TODO) randomly generated (uniformly distributed) lambda terms
 - (TODO) operations on other inductive types
 - (TODO) maybe make some type-erasured programs from existing code bases?
+
+
+## References
+
+<a id="1">[1]</a>
+[](https://oa.upm.es/30153/1/30153nogueiraINVES_MEM_2013.pdf)
+
+<a id="2">[2]</a>
+[](https://dl.acm.org/doi/10.1007/s10990-007-9015-z)
+
+<a id="3">[3]</a>
+[](https://hal.inria.fr/hal-01499941/document)
+
+<a id="4">[4]</a>
+[](https://www.ccs.neu.edu/home/wand/papers/shivers-wand-10.pdf)
+
+<a id="5">[5]</a>
+[](https://dl.acm.org/doi/book/10.5555/868417)

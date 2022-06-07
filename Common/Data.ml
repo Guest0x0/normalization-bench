@@ -23,14 +23,14 @@ module Vector = struct
         ; garbage      : 'a }
 
 
-    let create ?(init_size=10) garbage () =
+    let create ?(init_size=10) ~garbage () =
         { data    = Array.make init_size garbage
         ; len     = 0
         ; garbage = garbage }
 
     let push value vec =
         if vec.len >= Array.length vec.data then begin
-            let data' = Array.make (vec.len * 3 / 2) vec.garbage in
+            let data' = Array.make (max 10 (vec.len * 3 / 2)) vec.garbage in
             Array.blit vec.data 0 data' 0 vec.len;
             vec.data <- data';
         end;
@@ -38,12 +38,12 @@ module Vector = struct
         vec.len <- vec.len + 1
 
     let get idx vec = vec.data.(vec.len - idx - 1)
+    let last vec = vec.data.(vec.len - 1)
 
     let pop vec =
-        vec.len <- vec.len - 1;
-        vec.data.(vec.len)
+        vec.len <- vec.len - 1
 
-    let copy vec = { vec with data = Array.copy vec.data }
+    let copy vec = { vec with data = Array.sub vec.data 0 vec.len }
 
     let to_array vec = Array.init vec.len (fun i -> vec.data.(i))
 end

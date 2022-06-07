@@ -64,15 +64,21 @@ found in [[4]](#4)
 
 ## Test Data
 
-- adding or multiplying two church numerals
-- randomly generated (uniformly distributed) lambda terms.
+- `church_add`: adding two church numerals
+- `church_mul`: multiplying two church numerals
+- `iterated_id_L`: `( ... ((id id) id) ... )`
+- `iterated_id_R`: `( ... (id (id id)) ... )`
+- `random`: randomly generated (uniformly distributed) lambda terms.
 The generation algorithm comes from [[6]](#6).
 First, a table of the total number of lambda terms of different sizes
 can be generated using `count_terms.ml` (`dune exec ./count_terms.exe`)
 (WARNING: very very costly even for modest sizes (< 10000)).
 Then `gen_random_terms.ml` (`dune exec ./gen_random_terms.ml`)
 can be used to randomly generate uniformly distributed lambda terms
-of different sizes and number of free variables.
+of different sizes and number of free variables
+- `self_interp_size`: encode lambda terms using lambda terms with
+scott encoding, then calculate the size (in church numeral) of terms
+by structural recursion
 - (TODO) operations on other inductive types
 - (TODO) self interpreter of lambda calculus
 - (TODO) maybe make some type-erasured programs from existing code bases?

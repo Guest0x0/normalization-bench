@@ -25,5 +25,11 @@ run_bench() {
 
 run_bench church_add 10000 50000 100000
 run_bench church_mul 80 160 240
-run_bench iterated_id 10000 50000 100000
+run_bench iterated_id_L 10000 50000 100000
+run_bench iterated_id_R 10000 50000 100000
+for size in 1000 2000 4000; do
+    echo "generating random terms of size $size"
+    dune exec ./gen_random_terms.exe $size 0 100 data/randterm$size data/term_counts
+done
 run_bench random 1000 2000 4000
+run_bench self_interp_size 100 500 1000 2000

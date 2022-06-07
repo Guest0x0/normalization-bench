@@ -5,6 +5,11 @@ type term =
     | App of term * term
 
 
+let rec term_size tm =
+    match tm with
+    | Idx _     -> 0
+    | Lam tm'   -> 1 + term_size tm'
+    | App(f, a) -> 1 + term_size f + term_size a
 
 
 

@@ -34,20 +34,26 @@ to represent the environment
 - `NBE.HOAS.closure.list|tree` (in `NBE_Closure.ml`):
 NBE, using raw lambda terms to represent closures.
 Come with two favors of environment data structure too
-- `NBE.pushenter.list|vec@size` (in `NBE_Pushenter.ml`)
+- `NBE.pushenter` (in `NBE_Pushenter.ml`)
 NBE with a push/enter style uncurrying.
 A separate argument stack is maintained,
 and closures are only allocated when the argument stack is empty.
-Environment and argument stack are implemented using list or vector.
 (Currently this does not seem to perform well.
 I doubt that I am doing it wrong)
 - `NBE.lazy` (in `NBE_Lazy.ml`):
 a variant of `NBE.HOAS.list` with lazy evaluation everywhere.
-- `AM.Crégut.list|vec@size` (in `AbstractMachine.ml`):
+- `AM.Crégut.X` (in `AbstractMachine.ml`):
 The strongly reducing krivine abstract machine of Pierre Crégut.
 I found it in [[1]](#1),
 and the original paper is [[2]](#2).
-The stack is implemented using list or vector.
+The variants are:
+
+  - `list`: use lists as stack
+  - `ADT`: inline the definition of each stack frame into the definition list
+  - `vec@size`: use vector as stack with initial size `size`
+  - `CBV`: I try to implement a CBV version of the machine here
+  (the original one is CBN). Use inlined ADT as stack.
+
 - (TODO) an eval/apply variant of uncurry optimization
 - (TODO) some bytecode based approaches.
 For example the modified ZAM used in Coq [[3]](#3)

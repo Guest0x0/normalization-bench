@@ -12,7 +12,7 @@ run_bench() {
     for size in $*; do
         echo "size $size:"
         for normalizer in $normalizers; do
-            msg=$(timeout $timeout $cmd 0 $normalizer $bench $size)
+            msg=$(timeout $timeout $cmd $normalizer $bench $size)
             if [ "$?" = "124" ]; then
                 echo "> $normalizer: time exceeded"
             else
@@ -26,3 +26,4 @@ run_bench() {
 run_bench church_add 100 500 1000 5000 10000 50000
 run_bench church_mul 20 40 80 160
 run_bench iterated_id 500 1000 5000 10000 50000
+run_bench random 100 200 500 1000 2000 3000 4000 6000 8000

@@ -1,5 +1,5 @@
 
-open Syntax
+open Common.Syntax
 
 type value =
     | VLvl of int
@@ -23,9 +23,5 @@ let rec eval env tm =
     | Lam tm'   -> Lazy.from_val @@ VLam(fun vx -> eval (vx :: env) tm')
     | App(f, a) -> lazy(apply_val (eval env f) (eval env a))
 
-let load () =
-    register_normalizer "NBE.lazy" @@ Norm {
-        of_term   = eval [];
-        normalize = Fun.id;
-        readback  = fun v -> quote 0 v
-    }
+
+let normalizer = Normalizer.Norm(Fun.id, fun tm -> quote 0 (eval [] tm))

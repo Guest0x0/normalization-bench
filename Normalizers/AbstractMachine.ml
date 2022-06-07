@@ -1,5 +1,5 @@
 
-open Syntax
+open Common.Syntax
 
 type value =
     | VLvl of int
@@ -30,9 +30,4 @@ let rec run (level, value, stack) =
     | VNF t, SEmpty            -> t
 
 
-let load () =
-    register_normalizer "AM.Crégut" @@ Norm {
-        of_term   = (fun tm -> (0, VClo([], tm), SEmpty));
-        normalize = Fun.id;
-        readback  = run
-    }
+let normalizer = Normalizer.Norm(Fun.id, fun tm -> run (0, VClo([], tm), SEmpty))

@@ -1,6 +1,6 @@
 
-open Syntax
-open Common
+open Common.Syntax
+open Common.Data
 
 module ListEnv = struct
     type value =
@@ -57,14 +57,5 @@ module TMapEnv = struct
 end
 
 
-let load () =
-    register_normalizer "NBE.closure.list" @@ Norm {
-        of_term   = ListEnv.eval [];
-        normalize = Fun.id;
-        readback  = ListEnv.quote 0
-    };
-    register_normalizer "NBE.closure.tree" @@ Norm {
-        of_term   = TMapEnv.eval TMap.empty;
-        normalize = Fun.id;
-        readback  = TMapEnv.quote 0
-    }
+let normalizer_list = Normalizer.Norm(Fun.id, fun tm -> ListEnv.(quote 0 @@ eval [] tm))
+let normalizer_tree = Normalizer.Norm(Fun.id, fun tm -> TMapEnv.(quote 0 @@ eval TMap.empty tm))

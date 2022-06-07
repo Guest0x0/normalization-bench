@@ -1,2 +1,17 @@
+
+(data_only_dirs data)
+
 (executable
- (name bench))
+ (name bench)
+ (libraries common normalizers)
+ (modules bench))
+
+(executable
+  (name count_terms)
+  (libraries common)
+  (modules count_terms))
+
+(executable
+ (name gen_random_terms)
+ (libraries common)
+ (modules gen_random_terms))

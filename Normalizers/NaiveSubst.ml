@@ -1,5 +1,5 @@
 
-open Syntax
+open Common.Syntax
 
 let rec shift (base, dist) tm =
     match tm with
@@ -36,9 +36,4 @@ let rec normalize tm =
         | tf'     -> App(tf', normalize ta)
 
 
-let load () =
-    register_normalizer "subst.naive" @@ Norm {
-        of_term   = Fun.id;
-        normalize = normalize;
-        readback  = Fun.id
-    }
+let normalizer = Normalizer.Norm(Fun.id, normalize)

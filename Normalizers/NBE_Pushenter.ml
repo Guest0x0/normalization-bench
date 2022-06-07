@@ -1,5 +1,5 @@
 
-open Syntax
+open Common.Syntax
 
 type value =
     | VLvl of int
@@ -35,9 +35,4 @@ let rec quote level value =
             (quote level f) args
 
 
-let load () =
-    register_normalizer "NBE.pushenter" @@ Norm {
-        of_term   = eval ([], []);
-        normalize = Fun.id;
-        readback  = quote 0
-    }
+let normalizer = Normalizer.Norm(Fun.id, fun tm -> quote 0 (eval ([], []) tm))

@@ -29,7 +29,7 @@ module ListStack = struct
         | VNF f, UseArg a :: stack' ->
             run (level, a, QuoteFun f :: stack')
         | VNF t, QuoteLam :: stack' ->
-            run (level, VNF(Lam t), stack')
+            run (level - 1, VNF(Lam t), stack')
         | VNF a, QuoteFun f :: stack' ->
             run (level, VNF(App(f, a)), stack')
         | VNF t, [] ->
@@ -65,7 +65,7 @@ module ADTStack = struct
             run (level, VNF(Idx(level - lvl - 1)), stack)
         | VNF f, UseArg(clo, stack') -> run (level, VClo clo, QuoteFun(f, stack'))
         | VNF a, QuoteFun(f, stack') -> run (level, VNF(App(f, a)), stack')
-        | VNF t, QuoteLam stack'     -> run (level, VNF(Lam t), stack')
+        | VNF t, QuoteLam stack'     -> run (level - 1, VNF(Lam t), stack')
         | VNF t, Empty               -> t
 
     let normalize tm = run (0, VClo([], tm), Empty)
@@ -79,41 +79,41 @@ module VecStack = struct
         | VNF  of term
 
     type stack_frame =
-        | SClo of (value list * term)
-        | SLam
-        | SNF  of term
-        | SHalt
+        | UseArg of (value list * term)
+        | QuoteLam
+        | QuoteFun of term
+        | Halt
 
     module Vec = Common.Data.Vector
 
-    let garbage = SHalt
+    let garbage = Halt
 
     let rec run (level, value, stack) =
         match value, Vec.last stack with
         | VClo(env, Idx idx  ), _ ->
             run (level, List.nth env idx, stack)
         | VClo(env, App(f, a)), _ ->
-            Vec.push (SClo(env, a)) stack;
+            Vec.push (UseArg(env, a)) stack;
             run (level, VClo(env, f), stack)
-        | VClo(env, Lam body), SClo clo ->
+        | VClo(env, Lam body), UseArg clo ->
             Vec.pop stack;
             run (level, VClo(VClo clo :: env, body), stack)
         | VClo(env, Lam body), _ ->
-            Vec.push SLam stack;
+            Vec.push QuoteLam stack;
             run (level + 1, VClo(VLvl level :: env, body), stack)
         | VLvl lvl, _ ->
             run (level, VNF(Idx(level - lvl - 1)), stack)
-        | VNF f, SClo clo ->
+        | VNF f, UseArg clo ->
             Vec.pop stack;
-            Vec.push (SNF f) stack;
+            Vec.push (QuoteFun f) stack;
             run (level, VClo clo, stack)
-        | VNF a, SNF f -> Vec.pop stack; run (level, VNF(App(f, a)), stack)
-        | VNF t, SLam  -> Vec.pop stack; run (level, VNF(Lam t), stack)
-        | VNF t, SHalt -> t
+        | VNF a, QuoteFun f -> Vec.pop stack; run (level, VNF(App(f, a)), stack)
+        | VNF t, QuoteLam  -> Vec.pop stack; run (level - 1, VNF(Lam t), stack)
+        | VNF t, Halt -> t
 
     let normalize init_size tm =
-        let stack = Vec.create ~init_size ~garbage:SHalt () in
-        Vec.push SHalt stack;
+        let stack = Vec.create ~init_size ~garbage:Halt () in
+        Vec.push Halt stack;
         run (0, VClo([], tm), stack)
 end
 
@@ -149,7 +149,7 @@ module CBV = struct
         | VNF f, UseArg(a, stack') ->
             run (level, a, QuoteFun(f, stack'))
         | VNF t, QuoteLam stack' ->
-            run (level, VNF(Lam t), stack')
+            run (level - 1, VNF(Lam t), stack')
         | VNF a, QuoteFun(f, stack') ->
             run (level, VNF(App(f, a)), stack')
         | VNF t, Empty ->

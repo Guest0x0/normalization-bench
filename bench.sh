@@ -25,6 +25,7 @@ run_bench() {
 
 run_bench church_add 10000 50000 100000
 run_bench church_mul 80 160 240
+run_bench parigot_add 5 10 11 12
 run_bench iterated_id_L 10000 50000 100000
 run_bench iterated_id_R 10000 50000 100000
 for size in 1000 2000 4000; do

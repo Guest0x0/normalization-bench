@@ -48,6 +48,57 @@ let church_mul =
 
 
 
+
+let parigot_zero = Lam(Lam(Idx 0))
+let parigot_succ =
+    Lam( (* n = 2 *)
+        Lam( (* case_succ = 1 *)
+            Lam( (* case_zero = 0 *)
+                apply (Idx 1)
+                    [Idx 2; apply (Idx 2) [Idx 1; Idx 0]]
+            )
+        )
+    )
+
+
+let rec parigot_aux n =
+    match n with
+    | 0 -> Idx 0
+    | _ ->
+        let n = parigot_aux (n - 1) in
+        apply (Idx 1) [Lam(Lam n); n]
+
+let parigot n = Lam(Lam(parigot_aux n))
+
+
+let rec parigot_shared n =
+    match n with
+    | 0 -> parigot_zero
+    | _ -> App(parigot_succ, parigot_shared (n - 1))
+
+
+
+let parigot_add =
+    Lam( (* m = 1 *)
+        Lam( (* n = 0 *)
+            apply (Idx 1)
+                [ Lam(Lam(apply parigot_succ [Idx 0]))
+                ; Idx 0 ]
+        )
+    )
+
+let parigot_mul =
+    Lam( (* m = 1 *)
+        Lam( (* n = 0 *)
+            apply (Idx 1)
+                [ Lam(apply parigot_add [Idx 1])
+                ; Idx 0 ]
+        )
+    )
+
+
+
+
 let idx n =
     Lam( (* case_idx = 2 *)
         Lam( (* case_lam = 1 *)

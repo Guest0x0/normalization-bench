@@ -6,15 +6,21 @@ open Common.Terms
 let benches = [
     ( "church_add"
     , fun size ->
-          List.init 100 @@ Fun.const @@
+          List.init 100 @@ Fun.const
               ( App(App(church_add, church size), church size)
               , Option.some @@ church (size + size) )
     );
     ( "church_mul"
     , fun size ->
-          List.init 100 @@ Fun.const @@
+          List.init 100 @@ Fun.const
               ( App(App(church_mul, church size), church size)
               , Option.some @@ church (size * size) )
+    );
+    ( "parigot_add"
+    , fun size ->
+          List.init 1 @@ Fun.const
+              ( App(App(parigot_add, parigot_shared size), parigot_shared size)
+              , Option.some @@ parigot (size + size) )
     );
     ( "iterated_id_L"
     , let rec loop size =

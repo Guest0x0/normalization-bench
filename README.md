@@ -66,6 +66,8 @@ found in [[4]](#4)
 
 - `church_add`: adding two church numerals
 - `church_mul`: multiplying two church numerals
+- `parigot_add`: adding two numerals in parigot encoding [[7]](#7).
+I read about parigot encoding in [[8]](#8)
 - `iterated_id_L`: `( ... ((id id) id) ... )`
 - `iterated_id_R`: `( ... (id (id id)) ... )`
 - `random`: randomly generated (uniformly distributed) lambda terms.
@@ -103,3 +105,9 @@ by structural recursion
 
 <a id="6">[6]</a>
 <http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.95.2624>
+
+<a id="7">[7]</a>
+<https://link.springer.com/chapter/10.1007/3-540-52753-2_47?noAccess=true>
+
+<a id="8">[8]</a>
+<https://homepage.cs.uiowa.edu/~astump/papers/cedille-draft.pdf>

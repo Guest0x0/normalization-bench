@@ -2,17 +2,28 @@
 
 ## Framework
 Lambda terms are represented using de Brujin index.
-Each algorithm should provide three functions:
+Each algorithm should provide two functions:
 
-- `convert`, which converts a lambda term to the algorithm's internal representation
-- `normalize`, which normalizes the algorithm's internal representation
-- `readback`, which read the algorithm's internal representation back to syntax
+- `preprocess`, which converts a lambda term to the algorithm's internal representation
+- `normalize`, which normalizes the term and convert it back to syntax
 
 In the future, maybe the time needed to test conversion directly
 on the algorithm's internal rep. may be added.
 
+The definition of syntax and common data structures lies in `Common`.
+
+The `bench.ml` executable can be used to run the various test benches.
+You should provide it with the name of normalizer,
+the name of benchmark and size parameter to the benchmark.
+
+To exclude the effect of previous runs on GC,
+every test run should be executed with a fresh process.
+This is done through the `bench.sh` script.
+It also handles timeout of benchmarks.
+
 
 ## Algorithms
+Various normalization algorithms sit in `Normalizers`:
 
 - `subst.naive` (in `naive_subst.ml`):
 naive normal-order capture-avoiding substitution
@@ -44,8 +55,16 @@ found in [[4]](#4)
 ## Test Data
 
 - adding or multiplying two church numerals
-- (TODO) randomly generated (uniformly distributed) lambda terms
+- randomly generated (uniformly distributed) lambda terms.
+The generation algorithm comes from [[6]](#6).
+First, a table of the total number of lambda terms of different sizes
+can be generated using `count_terms.ml` (`dune exec ./count_terms.exe`)
+(WARNING: very very costly even for modest sizes (< 10000)).
+Then `gen_random_terms.ml` (`dune exec ./gen_random_terms.ml`)
+can be used to randomly generate uniformly distributed lambda terms
+of different sizes and number of free variables.
 - (TODO) operations on other inductive types
+- (TODO) self interpreter of lambda calculus
 - (TODO) maybe make some type-erasured programs from existing code bases?
 
 
@@ -65,3 +84,6 @@ found in [[4]](#4)
 
 <a id="5">[5]</a>
 <https://dl.acm.org/doi/book/10.5555/868417>
+
+<a id="6">[6]</a>
+<http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.95.2624>

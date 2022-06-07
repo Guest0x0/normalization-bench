@@ -47,3 +47,57 @@ module Vector = struct
 
     let to_array vec = Array.init vec.len (fun i -> vec.data.(i))
 end
+
+
+
+module SkewList = struct
+    type 'a tree =
+        | Leaf   of 'a
+        | Branch of 'a tree * 'a * 'a tree
+
+    type 'a t = (int * 'a tree) list
+
+
+    let empty = []
+
+
+    let push elem t =
+        match t with
+        | (m, l) :: (n, r) :: t' when m = n ->
+            (2 * m + 1, Branch(l, elem, r)) :: t'
+        | _ ->
+            (1, Leaf elem) :: t
+
+    let pop t =
+        match t with
+        | [] ->
+            failwith "SkewList.pop"
+        | (_, Leaf _) :: t' ->
+            t'
+        | (m, Branch(l, _, r)) :: t' ->
+            let m' = (m - 1) / 2 in
+            (m', l) :: (m', r) :: t'
+
+
+    let rec get_tree idx (m, tree) =
+        match tree with
+        | Leaf e
+        | Branch(_, e, _) when idx = 0 ->
+            e
+        | Branch(l, _, r) ->
+            let m' = (m - 1) / 2 in
+            if idx - 1 < m'
+            then get_tree (idx - 1)      (m', l)
+            else get_tree (idx - 1 - m') (m', r)
+        | _ ->
+            failwith "SkewList.get"
+
+    let rec get idx t =
+        match t with
+        | [] ->
+            failwith "SkewList.get"
+        | (m, tree) :: _ when idx < m ->
+            get_tree idx (m, tree)
+        | (m, _) :: t' ->
+            get (idx - m) t'
+end

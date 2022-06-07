@@ -8,6 +8,7 @@ let normalizers = [
     "AM.Crégut.CBV"     , AbstractMachine.normalizer_cbv;
     "NBE.HOAS.list"     , NBE_HOAS.normalizer_list;
     "NBE.HOAS.tree"     , NBE_HOAS.normalizer_tree;
+    "NBE.HOAS.skew"     , NBE_HOAS.normalizer_skew;
     "NBE.closure.list"  , NBE_Closure.normalizer_list;
     "NBE.closure.tree"  , NBE_Closure.normalizer_tree;
     "NBE.lazy"          , NBE_Lazy.normalizer;

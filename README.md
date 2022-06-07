@@ -27,13 +27,19 @@ Various normalization algorithms sit in `Normalizers`:
 
 - `subst.naive` (in `NaiveSubst.ml`):
 naive normal-order capture-avoiding substitution
-- `NBE.HOAS.list|tree` (in `NBE_HOAS.ml`):
+- `NBE.HOAS.X` (in `NBE_HOAS.ml`):
 Normalization By Evaluation (NBE), using HOAS to represent closures.
+`X` is the data structure used to implement the environment,
+which includes:
+  - `list`: plain list
+  - `tree`: `Map` in OCaml's standard library (AVL tree)
+  - `skew`: skew binary random access list from Chris Okasaki's
+  Purely Functional Data structure [[9]](#9)
 There are variants using list and OCaml's binary tree based map
 to represent the environment
 - `NBE.HOAS.closure.list|tree` (in `NBE_Closure.ml`):
 NBE, using raw lambda terms to represent closures.
-Come with two favors of environment data structure too
+Come with two flavors of environment data structure too
 - `NBE.pushenter` (in `NBE_Pushenter.ml`)
 NBE with a push/enter style uncurrying.
 A separate argument stack is maintained,
@@ -111,3 +117,6 @@ by structural recursion
 
 <a id="8">[8]</a>
 <https://homepage.cs.uiowa.edu/~astump/papers/cedille-draft.pdf>
+
+<a id="9">[9]</a>
+<https://dl.acm.org/doi/10.5555/580840>

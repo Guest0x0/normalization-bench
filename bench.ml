@@ -15,23 +15,25 @@ type test_bench =
 let benches = [
     { name  = "church_add"
     ; terms = (fun size ->
-              [ App(App(church_add, church size), church size)
-              , Option.some @@ church (size + size) ]) };
+          List.init 100 @@ Fun.const @@
+              ( App(App(church_add, church size), church size)
+              , Option.some @@ church (size + size) )) };
     { name  = "church_mul"
     ; terms = (fun size ->
-              [ App(App(church_mul, church size), church size)
-              , Option.some @@ church (size * size) ]) };
+          List.init 100 @@ Fun.const @@
+              ( App(App(church_mul, church size), church size)
+              , Option.some @@ church (size * size) )) };
     { name  = "iterated_id"
     ; terms =
           let rec loop size =
               if size <= 1
               then id
               else App(loop (size - 1), id)
-          in fun size -> [loop size, Some id] };
+          in fun size -> List.init 100 @@ Fun.const (loop size, Some id) };
     { name = "random"
     ; terms = fun size ->
           let file = open_in ("data/randterm" ^ string_of_int size) in
-          List.init 10 (fun _ -> deserialize file, None) };
+          List.init 99 (fun _ -> deserialize file, None) };
 ]
 
 

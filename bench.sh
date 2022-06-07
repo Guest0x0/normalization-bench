@@ -23,7 +23,7 @@ run_bench() {
     done
 }
 
-run_bench church_add 100 500 1000 5000 10000 50000
-run_bench church_mul 20 40 80 160
-run_bench iterated_id 500 1000 5000 10000 50000
-run_bench random 100 200 500 1000 2000 3000 4000 6000 8000
+run_bench church_add 10000 50000 100000 500000
+run_bench church_mul 80 160 240 360
+run_bench iterated_id 10000 50000 100000 500000
+run_bench random 1000 2000 4000

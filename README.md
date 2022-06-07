@@ -25,22 +25,24 @@ It also handles timeout of benchmarks.
 ## Algorithms
 Various normalization algorithms sit in `Normalizers`:
 
-- `subst.naive` (in `naive_subst.ml`):
+- `subst.naive` (in `NaiveSubst.ml`):
 naive normal-order capture-avoiding substitution
-- `NBE.HOAS.list|tree` (in `nbe_hoas.ml`):
+- `NBE.HOAS.list|tree` (in `NBE_HOAS.ml`):
 Normalization By Evaluation (NBE), using HOAS to represent closures.
 There are variants using list and OCaml's binary tree based map
 to represent the environment
-- `NBE.HOAS.closure.list|tree` (in `nbe_closure.ml`):
+- `NBE.HOAS.closure.list|tree` (in `NBE_Closure.ml`):
 NBE, using raw lambda terms to represent closures.
 Come with two favors of environment data structure too
-- `NBE.pushenter` (in `nbe_pushenter.ml`)
+- `NBE.pushenter` (in `NBE_Pushenter.ml`)
 NBE with a push/enter style uncurrying.
 A separate argument stack is maintained,
 and closures are only allocated when the argument stack is empty.
 (Currently this does not seem to perform well.
 I doubt that I am doing it wrong)
-- `AM.Crégut` (in `abstract_machine.ml`):
+- `NBE.lazy` (in `NBE_Lazy.ml`):
+a variant of `NBE.HOAS.list` with lazy evaluation everywhere.
+- `AM.Crégut` (in `AbstractMachine.ml`):
 The strongly reducing krivine abstract machine of Pierre Crégut.
 I found it in [[1]](#1),
 and the original paper is [[2]](#2).

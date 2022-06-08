@@ -25,8 +25,11 @@ It also handles timeout of benchmarks.
 ## Algorithms
 Various normalization algorithms sit in `Normalizers`:
 
-- `subst.naive` (in `NaiveSubst.ml`):
+- `subst.naive` (in `Subst.ml`):
 naive normal-order capture-avoiding substitution
+- `subst.whead` (in `Subst.ml`):
+capture-avoiding substitution, but reduce head only to weak head first
+before substitution.
 - `NBE.HOAS.X` (in `NBE_HOAS.ml`):
 Normalization By Evaluation (NBE), using HOAS to represent closures.
 `X` is the data structure used to implement the environment,
@@ -37,7 +40,7 @@ which includes:
   Purely Functional Data structure [[9]](#9)
 There are variants using list and OCaml's binary tree based map
 to represent the environment
-- `NBE.HOAS.closure.list|tree` (in `NBE_Closure.ml`):
+- `NBE.closure.list|tree` (in `NBE_Closure.ml`):
 NBE, using raw lambda terms to represent closures.
 Come with two flavors of environment data structure too
 - `NBE.pushenter` (in `NBE_Pushenter.ml`)

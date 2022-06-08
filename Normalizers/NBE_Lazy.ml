@@ -16,6 +16,7 @@ let apply_val vf va =
     match Lazy.force vf with
     | VLam f -> Lazy.force (f va)
     | _      -> VApp(vf, va)
+[@@inline]
 
 let rec eval env tm =
     match tm with

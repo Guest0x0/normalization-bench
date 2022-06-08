@@ -19,8 +19,10 @@ module ListEnv = struct
         match vf with
         | VLam clo -> apply_clo clo va
         | _        -> VApp(vf, va)
+    [@@inline]
 
     and apply_clo (env, body) va = eval (va :: env) body
+    [@@inline]
 
     let rec quote level value =
         match value with
@@ -46,8 +48,10 @@ module TMapEnv = struct
         match vf with
         | VLam clo -> apply_clo clo va
         | _        -> VApp(vf, va)
+    [@@inline]
 
     and apply_clo (env, body) va = eval (TMap.push va env) body
+    [@@inline]
 
     let rec quote level value =
         match value with

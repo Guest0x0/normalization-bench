@@ -11,6 +11,7 @@ let apply_val vf va =
     match vf with
     | VLam f -> f va
     | _      -> VApp(vf, va)
+[@@inline]
 
 
 let rec quote level value =

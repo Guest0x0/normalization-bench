@@ -24,6 +24,7 @@ module ListStack = struct
         match vf, args with
         | VLam(env, tm), arg :: args' -> eval (arg :: env, args') tm
         | _                           -> VApp(vf, args)
+    [@@inline]
 
 
     let rec quote level value =
@@ -73,6 +74,7 @@ module VecStack = struct
             Vec.pop env;
             result
         | _ -> VApp(vf, args)
+    [@@inline]
 
 
     let rec quote level value =

@@ -40,6 +40,10 @@ which includes:
   Purely Functional Data structure [[9]](#9)
 There are variants using list and OCaml's binary tree based map
 to represent the environment
+- `NBE.memo` (in `NBE_Memo.ml`)
+Same as `NBE.closure.list`,
+but each value memorizes the term it quotes back to (at some level).
+There's only one memorization slot, to reduce constant overhead.
 - `NBE.closure.list|tree` (in `NBE_Closure.ml`):
 NBE, using raw lambda terms to represent closures.
 Come with two flavors of environment data structure too

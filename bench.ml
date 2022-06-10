@@ -57,27 +57,33 @@ let _ =
         ( List.iter (fun (name, _)  -> print_endline name)
                         Normalizers.normalizers
         ; exit 0 );
-    let (Norm(preprocess, normalize)) =
-        List.assoc Sys.argv.(1) Normalizers.normalizers
-    in
+    let normalizer = List.assoc Sys.argv.(1) Normalizers.normalizers in
     let terms = List.assoc Sys.argv.(2) benches in
     let size = int_of_string Sys.argv.(3) in
-    let preprocess_t = ref 0. in
-    let normalize_t  = ref 0. in
+    let total = ref 0. in
+    let sub_times = Hashtbl.create 10 in
     terms size |> List.iter begin fun (tm, expected) ->
-        let t0  = Sys.time () in
-        let rep = preprocess tm in
-        let t1  = Sys.time () in
-        let nf  = normalize rep in
-        let t2  = Sys.time () in
+        let (nf, total', sub_times') = normalizer.run tm in
         match expected with
         | Some expected when Hashtbl.hash expected <> Hashtbl.hash nf ->
             failwith "wrong answer\n"
         | _ ->
-            preprocess_t := !preprocess_t +. t1 -. t0;
-            normalize_t  := !normalize_t  +. t2 -. t1
+            total := !total +. total';
+            sub_times' |> List.iter @@ fun (label, t) ->
+            match Hashtbl.find_opt sub_times label with
+            | Some t0 -> Hashtbl.add sub_times label (t0 +. t)
+            | None    -> Hashtbl.add sub_times label t
     end;
-    Format.printf
-        "preprocess=%f, normalize=%f, total=%f\n"
-        !preprocess_t !normalize_t (!preprocess_t +. !normalize_t);
-    Format.print_flush ()
+    Printf.printf "%f" !total;
+    if Hashtbl.length sub_times > 0 then begin
+        Printf.printf " (";
+        let first = ref true in
+        sub_times |> Hashtbl.iter begin fun label t ->
+            if not !first then
+                Printf.printf ", ";
+            first := false;
+            Printf.printf "%s=%f" label t
+        end;
+        Printf.printf ")";
+    end;
+    Printf.printf "\n"

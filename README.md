@@ -2,10 +2,13 @@
 
 ## Framework
 Lambda terms are represented using de Brujin index.
-Each algorithm should provide two functions:
-
-- `preprocess`, which converts a lambda term to the algorithm's internal representation
-- `normalize`, which normalizes the term and convert it back to syntax
+Time used to normalize a term is measured.
+Some algorithms may use an alternative term representation.
+In this case, the time used to convert between different term representations
+is not counted.
+Note that intermediate data structure like values in NBE
+does not count as an alternative term representation
+because they cannot be examined.
 
 In the future, maybe the time needed to test conversion directly
 on the algorithm's internal rep. may be added.

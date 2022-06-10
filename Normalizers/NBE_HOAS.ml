@@ -43,6 +43,9 @@ let rec eval_skew env tm =
     | App(f, a) -> apply_val (eval_skew env f) (eval_skew env a)
 
 
-let normalizer_list = Normalizer.Norm(Fun.id, fun tm -> quote 0 (eval_list [] tm))
-let normalizer_tree = Normalizer.Norm(Fun.id, fun tm -> quote 0 (eval_map TMap.empty tm))
-let normalizer_skew = Normalizer.Norm(Fun.id, fun tm -> quote 0 (eval_skew SkewList.empty tm))
+let normalizer_list = Normalizer.simple_normalizer
+        (fun tm -> quote 0 (eval_list [] tm))
+let normalizer_tree = Normalizer.simple_normalizer
+        (fun tm -> quote 0 (eval_map TMap.empty tm))
+let normalizer_skew = Normalizer.simple_normalizer
+        (fun tm -> quote 0 (eval_skew SkewList.empty tm))

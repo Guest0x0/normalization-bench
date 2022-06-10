@@ -25,4 +25,5 @@ let rec eval env tm =
     | App(f, a) -> lazy(apply_val (eval env f) (eval env a))
 
 
-let normalizer = Normalizer.Norm(Fun.id, fun tm -> quote 0 (eval [] tm))
+let normalizer = Normalizer.simple_normalizer
+        (fun tm -> quote 0 (eval [] tm))

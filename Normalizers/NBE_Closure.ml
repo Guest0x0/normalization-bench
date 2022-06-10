@@ -61,5 +61,7 @@ module TMapEnv = struct
 end
 
 
-let normalizer_list = Normalizer.Norm(Fun.id, fun tm -> ListEnv.(quote 0 @@ eval [] tm))
-let normalizer_tree = Normalizer.Norm(Fun.id, fun tm -> TMapEnv.(quote 0 @@ eval TMap.empty tm))
+let normalizer_list = Normalizer.simple_normalizer
+        (fun tm -> ListEnv.(quote 0 @@ eval [] tm))
+let normalizer_tree = Normalizer.simple_normalizer
+        (fun tm -> TMapEnv.(quote 0 @@ eval TMap.empty tm))

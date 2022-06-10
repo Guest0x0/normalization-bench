@@ -54,5 +54,5 @@ and normalize tm =
         | Lam tm' -> normalize (subst (0, normalize_head a) tm')
         | f'      -> App(f', normalize a)
 
-let normalizer_naive = Normalizer.Norm(Fun.id, normalize_naive)
-let normalizer_whead = Normalizer.Norm(Fun.id, normalize)
+let normalizer_naive = Normalizer.simple_normalizer normalize_naive
+let normalizer_whead = Normalizer.simple_normalizer normalize

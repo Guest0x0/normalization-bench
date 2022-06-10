@@ -42,4 +42,5 @@ and quote_rep level rep =
 [@@inline]
 
 
-let normalizer = Normalizer.Norm(Fun.id, fun tm -> quote 0 (eval [] tm))
+let normalizer = Normalizer.simple_normalizer 
+        (fun tm -> quote 0 (eval [] tm))

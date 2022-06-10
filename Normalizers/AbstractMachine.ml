@@ -111,13 +111,14 @@ module ArrayStack = struct
         | VNF t, QuoteLam  -> Stack.pop stack; run (level - 1, VNF(Lam t), stack)
         | VNF t, Halt -> t
 
-    let preprocess init_size tm =
+
+    let make_normalizer init_size =
         let stack = Stack.create ~init_size ~garbage:Halt () in
         Stack.push Halt stack;
-        (tm,  stack)
-
-    let normalize (tm, stack) =
-        run (0, VClo([], tm), stack)
+        object
+            method normalize tm =
+                run (0, VClo([], tm), stack)
+        end
 end
 
 
@@ -162,10 +163,8 @@ module CBV = struct
 end
 
 
-let normalizer_list = Normalizer.Norm(Fun.id, ListStack.normalize)
-let normalizer_adt  = Normalizer.Norm(Fun.id, ADTStack.normalize)
-let normalizer_arr  = Normalizer.Norm(
-        ArrayStack.preprocess 1000000,
-        ArrayStack.normalize
-    )
-let normalizer_cbv = Normalizer.Norm(Fun.id, CBV.normalize)
+let normalizer_list = Normalizer.simple_normalizer ListStack.normalize
+let normalizer_adt  = Normalizer.simple_normalizer ADTStack.normalize
+let normalizer_arr  = Normalizer.object_normalizer
+        ArrayStack.make_normalizer 1000000
+let normalizer_cbv = Normalizer.simple_normalizer CBV.normalize

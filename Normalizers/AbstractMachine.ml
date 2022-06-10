@@ -72,7 +72,7 @@ module ADTStack = struct
 end
 
 
-module VecStack = struct
+module ArrayStack = struct
     type value =
         | VLvl of int
         | VClo of (value list * term)
@@ -84,36 +84,39 @@ module VecStack = struct
         | QuoteFun of term
         | Halt
 
-    module Vec = Common.Data.Vector
+    module Stack = Common.Data.ArrayStack
 
     let garbage = Halt
 
     let rec run (level, value, stack) =
-        match value, Vec.last stack with
+        match value, Stack.last stack with
         | VClo(env, Idx idx  ), _ ->
             run (level, List.nth env idx, stack)
         | VClo(env, App(f, a)), _ ->
-            Vec.push (UseArg(env, a)) stack;
+            Stack.push (UseArg(env, a)) stack;
             run (level, VClo(env, f), stack)
         | VClo(env, Lam body), UseArg clo ->
-            Vec.pop stack;
+            Stack.pop stack;
             run (level, VClo(VClo clo :: env, body), stack)
         | VClo(env, Lam body), _ ->
-            Vec.push QuoteLam stack;
+            Stack.push QuoteLam stack;
             run (level + 1, VClo(VLvl level :: env, body), stack)
         | VLvl lvl, _ ->
             run (level, VNF(Idx(level - lvl - 1)), stack)
         | VNF f, UseArg clo ->
-            Vec.pop stack;
-            Vec.push (QuoteFun f) stack;
+            Stack.pop stack;
+            Stack.push (QuoteFun f) stack;
             run (level, VClo clo, stack)
-        | VNF a, QuoteFun f -> Vec.pop stack; run (level, VNF(App(f, a)), stack)
-        | VNF t, QuoteLam  -> Vec.pop stack; run (level - 1, VNF(Lam t), stack)
+        | VNF a, QuoteFun f -> Stack.pop stack; run (level, VNF(App(f, a)), stack)
+        | VNF t, QuoteLam  -> Stack.pop stack; run (level - 1, VNF(Lam t), stack)
         | VNF t, Halt -> t
 
-    let normalize init_size tm =
-        let stack = Vec.create ~init_size ~garbage:Halt () in
-        Vec.push Halt stack;
+    let preprocess init_size tm =
+        let stack = Stack.create ~init_size ~garbage:Halt () in
+        Stack.push Halt stack;
+        (tm,  stack)
+
+    let normalize (tm, stack) =
         run (0, VClo([], tm), stack)
 end
 
@@ -161,5 +164,8 @@ end
 
 let normalizer_list = Normalizer.Norm(Fun.id, ListStack.normalize)
 let normalizer_adt  = Normalizer.Norm(Fun.id, ADTStack.normalize)
-let normalizer_vec size = Normalizer.Norm(Fun.id, VecStack.normalize size)
+let normalizer_arr  = Normalizer.Norm(
+        ArrayStack.preprocess 1000000,
+        ArrayStack.normalize
+    )
 let normalizer_cbv = Normalizer.Norm(Fun.id, CBV.normalize)

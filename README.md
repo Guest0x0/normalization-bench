@@ -38,8 +38,6 @@ which includes:
   - `tree`: `Map` in OCaml's standard library (AVL tree)
   - `skew`: skew binary random access list from Chris Okasaki's
   Purely Functional Data structure [[9]](#9)
-There are variants using list and OCaml's binary tree based map
-to represent the environment
 - `NBE.memo` (in `NBE_Memo.ml`)
 Same as `NBE.closure.list`,
 but each value memorizes the term it quotes back to (at some level).
@@ -63,7 +61,7 @@ The variants are:
 
   - `list`: use lists as stack
   - `ADT`: inline the definition of each stack frame into the definition list
-  - `vec@size`: use vector as stack with initial size `size`
+  - `arr`: use a large array as stack with initial size `size`
   - `CBV`: I try to implement a CBV version of the machine here
   (the original one is CBN). Use inlined ADT as stack.
 

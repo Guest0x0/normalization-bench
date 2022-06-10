@@ -16,25 +16,24 @@ module TMap = struct
         find (tmap.len - idx - 1) tmap.data
 end
 
-module Vector = struct
+module ArrayStack = struct
     type 'a t =
         { mutable data : 'a Array.t
         ; mutable len  : int
         ; garbage      : 'a }
 
+    exception Stack_Overflow
 
-    let create ?(init_size=10) ~garbage () =
+
+    let create ?(init_size=200) ~garbage () =
         { data    = Array.make init_size garbage
         ; len     = 0
         ; garbage = garbage }
 
     let push value vec =
-        if vec.len >= Array.length vec.data then begin
-            let data' = Array.make (max 10 (vec.len * 3 / 2)) vec.garbage in
-            Array.blit vec.data 0 data' 0 vec.len;
-            vec.data <- data';
-        end;
-        vec.data.(vec.len) <- value;
+        if vec.len >= Array.length vec.data then
+            raise Stack_Overflow;
+        Array.unsafe_set vec.data vec.len value;
         vec.len <- vec.len + 1
 
     let get idx vec = vec.data.(vec.len - idx - 1)

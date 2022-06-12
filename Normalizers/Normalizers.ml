@@ -20,6 +20,8 @@ let normalizers = [
    *)
     "compiled.HOAS.byte"   , Compiled_HOAS.normalizer "byte";
     "compiled.HOAS.native"   , Compiled_HOAS.normalizer "native";
+    "compiled.HOAS.O2"   , Compiled_HOAS.normalizer "O2";
     "compiled.evalapply.byte", Compiled_Evalapply.normalizer "byte";
     "compiled.evalapply.native", Compiled_Evalapply.normalizer "native";
+    "compiled.evalapply.O2", Compiled_Evalapply.normalizer "O2";
 ]

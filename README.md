@@ -68,15 +68,17 @@ The variants are:
   - `CBV`: I try to implement a CBV version of the machine here
   (the original one is CBN). Use inlined ADT as stack.
 
-- `compiled.HOAS.byte|native` (in `Compiled_HOAS.ml`):
+- `compiled.HOAS.byte|native|O2` (in `Compiled_HOAS.ml`):
 compile the given term to a OCaml program
 that performs normalization directly by tagged HOAS.
-The generated OCaml program can be compiled in bytecode or native mode.
-- `compiled.evalapply.byte|native` (in `Compiled_HOAS.ml`):
+The generated OCaml program can be compiled in bytecode, native,
+or optimized native mode.
+- `compiled.evalapply.byte|native|O2` (in `Compiled_Evalapply.ml`):
 compile the given term to a OCaml program
 that performs normalization directly by tagged HOAS,
 with eval/apply style n-ary function optimization for functions with 1~5 params.
-The generated OCaml program can be compiled in bytecode or native mode.
+The generated OCaml program can be compiled in bytecode, native,
+or optimized native mode.
 - (TODO) some bytecode based approaches.
 For example the modified ZAM used in Coq [[3]](#3)
 - (TODO) fully lazy, in-place, graph reduction,

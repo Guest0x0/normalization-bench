@@ -73,12 +73,14 @@ compile the given term to a OCaml program
 that performs normalization directly by tagged HOAS.
 The generated OCaml program can be compiled in bytecode, native,
 or optimized native mode.
+I got the idea from [[10]](#10) and [[11]](#11).
 - `compiled.evalapply.byte|native|O2` (in `Compiled_Evalapply.ml`):
 compile the given term to a OCaml program
 that performs normalization directly by tagged HOAS,
 with eval/apply style n-ary function optimization for functions with 1~5 params.
 The generated OCaml program can be compiled in bytecode, native,
 or optimized native mode.
+I got the idea from [[12]](#12).
 - (TODO) some bytecode based approaches.
 For example the modified ZAM used in Coq [[3]](#3)
 - (TODO) fully lazy, in-place, graph reduction,
@@ -138,3 +140,12 @@ by structural recursion
 
 <a id="9">[9]</a>
 <https://dl.acm.org/doi/10.5555/580840>
+
+<a id="10">[10]</a>
+<https://www21.in.tum.de/~nipkow/pubs/tphols08.pdf>
+
+<a id="11">[11]</a>
+<https://hal.inria.fr/hal-00650940/document>
+
+<a id="12">[12]</a>
+<https://hal.inria.fr/inria-00434283/document>

@@ -22,14 +22,15 @@ run_bench() {
     done
 }
 
-# run_bench church_add 10000 50000 100000
+run_bench church_add 10000 50000 100000 500000
 run_bench church_mul 80 160 240
-# run_bench parigot_add 5 10 11 12
-# run_bench iterated_id_L 10000 50000 100000
-# run_bench iterated_id_R 10000 50000 100000
-for size in 1000 2000 4000; do
+run_bench parigot_add 5 10 11 12
+run_bench exponential 15 20 25
+run_bench iterated_id_L 10000 50000 100000
+run_bench iterated_id_R 10000 50000 100000
+for size in 1000 2000 4000 6000 8000; do
     echo "generating random terms of size $size"
     dune exec ./gen_random_terms.exe $size 0 100 data/randterm$size data/term_counts
 done
-run_bench random 1000 2000 4000
-run_bench self_interp_size 100 500 1000 2000
+run_bench random 1000 2000 4000 6000 8000
+run_bench self_interp_size 500 1000 2000 5000

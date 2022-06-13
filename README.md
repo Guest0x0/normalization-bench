@@ -99,8 +99,15 @@ found in [[4]](#4)
 
 - `church_add`: adding two church numerals
 - `church_mul`: multiplying two church numerals
+- `exponential`: an artificial benchmark of terms whose normal forms'
+sizes grow exponentially and have a lot of sharing.
+Let `t(0) = x`, `t(n+1) = (\y. y y) t(n)`,
+this benchmark normalizes `\x. t(n)`.
+Let `r(0) = x`, `r(n+1) = r(n) r(n)`,
+`\x. t(n)` will normalize to `\x. r(n)`.
 - `parigot_add`: adding two numerals in parigot encoding [[7]](#7).
-I read about parigot encoding in [[8]](#8)
+I read about parigot encoding in [[8]](#8).
+This is perhaps a practical example of terms of exponentially growing size.
 - `iterated_id_L`: `( ... ((id id) id) ... )`
 - `iterated_id_R`: `( ... (id (id id)) ... )`
 - `random`: randomly generated (uniformly distributed) lambda terms.

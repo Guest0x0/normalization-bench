@@ -6,13 +6,13 @@ open Common.Terms
 let benches = [
     ( "church_add"
     , fun size ->
-          List.init 1 @@ Fun.const
+          List.init 20 @@ Fun.const
               ( apply church_add [church size; church size]
               , Option.some @@ church (size + size) )
     );
     ( "church_mul"
     , fun size ->
-          List.init 1 @@ Fun.const
+          List.init 20 @@ Fun.const
               ( apply church_mul [church size; church size]
               , Option.some @@ church (size * size) )
     );
@@ -27,24 +27,40 @@ let benches = [
           if size <= 1
           then id
           else App(loop (size - 1), id)
-        in fun size -> List.init 1 @@ Fun.const (loop size, Some id)
+        in fun size -> List.init 20 @@ Fun.const (loop size, Some id)
     );
     ( "iterated_id_R"
     , let rec loop size =
           if size <= 1
           then id
           else App(id, loop (size - 1))
-        in fun size -> List.init 1 @@ Fun.const (loop size, Some id)
+        in fun size -> List.init 20 @@ Fun.const (loop size, Some id)
+    );
+    ( "exponential"
+    , let rec src size =
+          if size <= 0
+          then Idx 0
+          else App(Lam(App(Idx 0, Idx 0)), src (size - 1))
+        in
+        let rec expected size =
+            if size <= 0
+            then Idx 0
+            else
+                let tm = expected (size - 1) in
+                App(tm, tm)
+        in
+        fun size -> List.init 20 @@ Fun.const
+                (Lam(src size), Some(Lam(expected size)))
     );
     ( "random"
     , fun size ->
           let file = open_in ("data/randterm" ^ string_of_int size) in
-          List.init 10 (fun _ -> deserialize file, None)
+          List.init 99 (fun _ -> deserialize file, None)
     );
     ( "self_interp_size"
     , fun size ->
         let tm = church size in
-        List.init 1 @@ Fun.const (
+        List.init 20 @@ Fun.const (
             App(church_lam_size, encode_term tm),
             Some(church (term_size tm))
         )

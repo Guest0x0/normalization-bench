@@ -41,10 +41,17 @@ which includes:
   - `tree`: `Map` in OCaml's standard library (AVL tree)
   - `skew`: skew binary random access list from Chris Okasaki's
   Purely Functional Data structure [[9]](#9)
-- `NBE.memo` (in `NBE_Memo.ml`)
+- `NBE.memo.v1|v2|v3` (in `NBE_Memo.ml`)
 Same as `NBE.closure.list`,
 but each value memorizes the term it quotes back to (at some level).
 There's only one memorization slot, to reduce constant overhead.
+`v1`, `v2` and `v3` uses three different ways to store the extra memorization slot.
+`v1` uses a fat pointer storing a mutable `(level * term) option`,
+`v2` also uses fat pointer, but uses two separate mutable slots
+for the level and the term respectively (the term slot holds garbage initiallly).
+`v3` stores the memorization slot inside the block for each case of the value ADT,
+and hence has only one layer of indirection.
+Turns out that this dirty memory layout optimizations have a significnat effect.
 - `NBE.closure.list|tree` (in `NBE_Closure.ml`):
 NBE, using raw lambda terms to represent closures.
 Come with two flavors of environment data structure too

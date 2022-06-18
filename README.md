@@ -112,10 +112,30 @@ or optimized native mode.
 I got the idea from [[12]](#12).
 - (TODO) some bytecode based approaches.
 For example the modified ZAM used in Coq [[3]](#3)
-- (TODO) fully lazy, in-place, graph reduction,
-found in [[4]](#4)
-- (TODO) the suspension lambda calculus in [[5]](#5)
 
+
+### Normalizers I know but don't plain to implement
+- fully lazy, in-place, graph reduction, found in [[4]](#4).
+The algorithm is quite complex, and NBE doesn't have the
+"search for variable to substitute" inefficiency.
+Also, this algorithm is rewriting based and I doubt the efficiency
+of such approaches.
+Still, it is worth being implemented and tested.
+But I am currently not very passionate on this.
+- the suspension lambda calculus in [[5]](#5).
+For pretty much the same reason.
+The calculus is complex, and I am in doubt with rewriting based approaches.
+- The Fireball calculus and different variants of GLAMOUr abstract machines in [[14]](#14).
+The theoretic complexity study seem interesting,
+The abstract machines require a
+"generate alpha-equivalent, capture avoiding term" operation,
+and I am not sure how this should be implemented.
+Also, to achieve the complexity bound in the paper requires using
+graph/explicit substitution based term representation altogether
+(otherwise quoting may result in an exponential blow up),
+but implementing the whole story together with conversion check seems complex.
+I wonder if the `NBE.memo` normalizers is related to some favor of the
+GLAMOUr machines.
 
 ## Benchmarks
 
@@ -650,3 +670,6 @@ dependent type checking is definitely a very interesting topic.
 
 <a id="12">[12]</a>
 <https://hal.inria.fr/inria-00434283/document>
+
+<a id="13">[13]</a>
+<https://arxiv.org/pdf/1701.08186.pdf>

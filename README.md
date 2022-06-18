@@ -585,6 +585,16 @@ However, the overly long compilation time renders these efficient approaches
 impractical for most everyday type checking,
 where the amount of computation is small but term sizes are large.
 
+In turns of optimizing untyped NBE,
+data layout in memory seems to have a very significant effect.
+This is not unexpected,
+as most of the time spent in NBE is manipulating values and terms,
+and one less indirection means more performance.
+This can be observed from the benchmarks of
+NBE with different environment representation,
+different value layouts of memorized NBE,
+and different stack representations of strongly reducing abstract machine.
+
 In spite of the efficiency of `NBE.closure.list`,
 some normalizers do have unique characteristics that may be desirable.
 For example `NBE.memo` in `exponential` and `parigot_add`.

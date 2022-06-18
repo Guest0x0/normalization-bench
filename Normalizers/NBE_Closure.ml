@@ -5,7 +5,7 @@ open Common.Data
 module ListEnv = struct
     type value =
         | VLvl of int
-        | VLam of (value list * term)
+        | VLam of value list * term
         | VApp of value * value
 
 
@@ -17,24 +17,21 @@ module ListEnv = struct
 
     and apply_val vf va =
         match vf with
-        | VLam clo -> apply_clo clo va
-        | _        -> VApp(vf, va)
-    [@@inline]
-
-    and apply_clo (env, body) va = eval (va :: env) body
+        | VLam(env, body) -> eval (va :: env) body
+        | _               -> VApp(vf, va)
     [@@inline]
 
     let rec quote level value =
         match value with
-        | VLvl lvl     -> Idx(level - lvl - 1)
-        | VLam clo     -> Lam(quote (level + 1) (apply_clo clo (VLvl level)))
-        | VApp(vf, va) -> App(quote level vf, quote level va)
+        | VLvl lvl        -> Idx(level - lvl - 1)
+        | VLam(env, body) -> Lam(quote (level + 1) @@ eval (VLvl level :: env) body)
+        | VApp(vf, va)    -> App(quote level vf, quote level va)
 end
 
 module TMapEnv = struct
     type value =
         | VLvl of int
-        | VLam of (value TMap.t * term)
+        | VLam of value TMap.t * term
         | VApp of value * value
 
 
@@ -46,18 +43,15 @@ module TMapEnv = struct
 
     and apply_val vf va =
         match vf with
-        | VLam clo -> apply_clo clo va
-        | _        -> VApp(vf, va)
-    [@@inline]
-
-    and apply_clo (env, body) va = eval (TMap.push va env) body
+        | VLam(env, body) -> eval (TMap.push va env) body
+        | _               -> VApp(vf, va)
     [@@inline]
 
     let rec quote level value =
         match value with
-        | VLvl lvl     -> Idx(level - lvl - 1)
-        | VLam clo     -> Lam(quote (level + 1) (apply_clo clo (VLvl level)))
-        | VApp(vf, va) -> App(quote level vf, quote level va)
+        | VLvl lvl        -> Idx(level - lvl - 1)
+        | VLam(env, body) -> Lam(quote (level + 1) @@ eval (TMap.push (VLvl level) env) body)
+        | VApp(vf, va)    -> App(quote level vf, quote level va)
 end
 
 

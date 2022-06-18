@@ -128,3 +128,7 @@ let compile out tm =
 let normalizer mode = Normalizer.compiled_normalizer ~mode
         (fun out -> output_string out prelude)
         compile
+
+let (byte_compile  , byte_normalize  ) = normalizer "byte"
+let (native_compile, native_normalize) = normalizer "native"
+let (o2_compile    , o2_normalize    ) = normalizer "O2"

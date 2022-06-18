@@ -2,35 +2,34 @@
 
 timeout=20
 cmd="dune exec ./bench.exe"
-normalizers=$($cmd list-normalizers)
 
-run_bench() {
-    bench=$1
-    shift 1
-    echo "=========== bench $bench ==========="
-    for size in $*; do
-        echo "size $size:"
-        for normalizer in $normalizers; do
-            msg=$(timeout $timeout $cmd $normalizer $bench $size 2>&1)
-            if [ "$?" = "124" ]; then
-                echo "> $normalizer: time exceeded"
-            else
-                echo "> $normalizer: $msg"
+for combi in $($cmd list-combinations); do
+    echo "==== combination $combi"
+    if [ ! -d data/$combi ]; then
+        mkdir data/$combi
+    fi
+    for bench in $($cmd list-benches $combi); do
+        echo "=== benchmark $bench"
+        echo "size $($cmd list-normalizers $combi)" >data/$combi/$bench.dat
+        for size in $($cmd list-sizes $bench); do
+            if [ "$bench" = "random" ]; then
+                echo "generating random terms of size $size"
+                dune exec ./gen_random_terms.exe $size 0 100 data/randterm$size data/term_counts
             fi
-            sleep 0.5
+            echo "size $size"
+            echo -n "$size" >>data/$combi/$bench.dat
+            for normalizer in $($cmd list-normalizers $combi); do
+                msg=$(timeout -s KILL $timeout $cmd $normalizer $bench $size 2>&1)
+                if [ "$?" != "0" ]; then
+                    echo "> $normalizer: failed ($msg)"
+                    echo -n " MISSING" >>data/$combi/$bench.dat
+                else
+                    echo "> $normalizer: $msg"
+                    echo -n " $msg" >>data/$combi/$bench.dat
+                fi
+                sleep 1
+            done
+            echo "" >>data/$combi/$bench.dat
         done
     done
-}
-
-run_bench church_add 10000 50000 100000 500000
-run_bench church_mul 80 160 240
-run_bench parigot_add 5 10 11 12
-run_bench exponential 15 20 25
-run_bench iterated_id_L 10000 50000 100000
-run_bench iterated_id_R 10000 50000 100000
-for size in 1000 2000 4000 6000 8000; do
-    echo "generating random terms of size $size"
-    dune exec ./gen_random_terms.exe $size 0 100 data/randterm$size data/term_counts
 done
-run_bench random 1000 2000 4000 6000 8000
-run_bench self_interp_size 500 1000 2000 5000

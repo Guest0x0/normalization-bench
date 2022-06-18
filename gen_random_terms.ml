@@ -1,5 +1,6 @@
 
 let _ =
+    let _ = Random.self_init () in
     let size    = int_of_string Sys.argv.(1) in
     let env_len = int_of_string Sys.argv.(2) in
     let num_terms   = int_of_string Sys.argv.(3) in

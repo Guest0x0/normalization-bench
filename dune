@@ -1,3 +1,6 @@
+(env
+ (_
+  (flags (:standard -warn-error -a+31))))
 
 (data_only_dirs data)
 

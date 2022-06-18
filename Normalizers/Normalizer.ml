@@ -46,7 +46,7 @@ let normalizer_with_alt_term_rep ~of_term ~normalize ~to_term =
     in { run }
 
 
-let compiled_normalizer ~mode prelude compile =
+let compiled_normalizer ?(check=false) ~mode prelude compile =
     let rec output_term out tm =
         match tm with
         | Common.Syntax.Idx idx ->
@@ -64,7 +64,7 @@ let compiled_normalizer ~mode prelude compile =
             output_term out a;
             output_string out "))"
     in
-    let run terms =
+    let run test_target terms =
         let target_file = "_build/tmp.ml" in
         let target = open_out target_file in
         let t0 = Sys.time () in
@@ -75,13 +75,13 @@ let compiled_normalizer ~mode prelude compile =
         terms |> List.iter begin fun (tm, expected) ->
             compile target tm;
             begin match expected with
-            | Some expected ->
+            | Some expected when check ->
                 output_string target "let expected = ";
                 output_term target expected;
                 output_string target ";;\n";
                 output_string target "if Hashtbl.hash nf <> Hashtbl.hash expected";
                 output_string target " then (print_endline \"wrong answer\"; exit 1);;\n";
-            | None ->
+            | _ ->
                 ()
             end
         end;
@@ -89,6 +89,10 @@ let compiled_normalizer ~mode prelude compile =
         output_string target "print_float (t1 -. t0);;";
         close_out target;
         let t1 = Sys.time () in
-        ignore @@ Sys.command @@ String.concat " " [ "./compile.sh"; mode ];
-        Printf.printf " (gen=%.6f)\n" (t1 -. t0)
-    in { run }
+        ignore @@ Sys.command @@ String.concat " " [
+            "./compile.sh"; mode;
+            test_target; string_of_float (t1 -. t0)
+        ];
+        (* Printf.printf " (gen=%.6f)\n" (t1 -. t0) *)
+    in
+    ( { run = run "compile" }, { run = run "normalize" } )

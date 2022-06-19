@@ -1,6 +1,7 @@
 # Benchmarking Normalization Algorithms
 
 ## Table of Contents
+
 1. [Test Framework](#Framework)
 1. [Normalizers](#Normalizers)
 1. [Benchmarks](#Benchmarks)
@@ -9,7 +10,8 @@
 1. [References](#References)
 
 ## Framework
-Lambda terms are represented using de Brujin index.
+
+Lambda terms are represented using de Bruijn index.
 Time used to normalize a term is measured.
 Some algorithms may use an alternative term representation.
 In this case, the time used to convert between different term representations
@@ -44,6 +46,7 @@ in the same environment, except for the `random` benchmark,
 where the fresh random terms are generated for each combination.
 
 ## Normalizers
+
 Various normalization algorithms sit in `Normalizers`.
 You can find more detailed explanation in the [Conclusion](#Conclusion).
 
@@ -113,8 +116,8 @@ I got the idea from [[12]](#12).
 - (TODO) some bytecode based approaches.
 For example the modified ZAM used in Coq [[3]](#3)
 
+### Normalizers I know but don't plan to implement
 
-### Normalizers I know but don't plain to implement
 - fully lazy, in-place, graph reduction, found in [[4]](#4).
 The algorithm is quite complex, and NBE doesn't have the
 "search for variable to substitute" inefficiency.

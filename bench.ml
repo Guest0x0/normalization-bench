@@ -24,7 +24,9 @@ let combinations = [
     , [ "NBE.closure.list"
       ; "NBE.memo.v1"
       ; "NBE.memo.v2"
-      ; "NBE.memo.v3" ] );
+      ; "NBE.memo.v3"
+      ; "NBE.memo.v4"
+      ; "NBE.memo.alpha" ] );
     ( "compiled-normalize"
     , [NoLargeTerm]
     , [ "NBE.closure.list"

@@ -10,6 +10,8 @@ let normalizers = [
     "NBE.memo.v1"     , NBE_Memo.normalizer_v1;
     "NBE.memo.v2"     , NBE_Memo.normalizer_v2;
     "NBE.memo.v3"     , NBE_Memo.normalizer_v3;
+    "NBE.memo.v4"     , NBE_Memo.normalizer_v4;
+    "NBE.memo.alpha"  , NBE_Memo.normalizer_alpha;
     "NBE.lazy"        , NBE_Lazy.normalizer;
     "NBE.pushenter"   , NBE_Pushenter.normalizer;
     "AM.Crégut.list"  , AbstractMachine.normalizer_list;

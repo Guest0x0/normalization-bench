@@ -63,7 +63,10 @@ which includes:
   - `tree`: `Map` in OCaml's standard library (AVL tree)
   - `skew`: skew binary random access list from Chris Okasaki's
   Purely Functional Data structure [[9]](#9)
-- `NBE.memo.v1|v2|v3` (in `NBE_Memo.ml`)
+- `NBE.closure.list|tree` (in `NBE_Closure.ml`):
+NBE, using raw lambda terms to represent closures.
+Come with two flavors of environment data structure too
+- `NBE.memo.v1|v2|v3|v4` (in `NBE_Memo.ml`)
 Same as `NBE.closure.list`,
 but each value memorizes the term it quotes back to (at some level).
 There's only one memorization slot, to reduce constant overhead.
@@ -73,10 +76,12 @@ There's only one memorization slot, to reduce constant overhead.
 for the level and the term respectively (the term slot holds garbage initiallly).
 `v3` stores the memorization slot inside the block for each case of the value ADT,
 and hence has only one layer of indirection.
+`v4` is the same as `v3`, but do not cache leaf nodes (variables).
 Turns out that this dirty memory layout optimizations have a significnat effect.
-- `NBE.closure.list|tree` (in `NBE_Closure.ml`):
-NBE, using raw lambda terms to represent closures.
-Come with two flavors of environment data structure too
+- `NBE.memo.alpha` (in `NBE_Memo.ml`)
+Same as `NBE.memo.v3`, but uses a named term representation
+and fresh variables are generated via a global cell.
+Don't have cache-miss issue.
 - `NBE.pushenter` (in `NBE_Pushenter.ml`)
 NBE with a push/enter style uncurrying.
 A separate argument stack is maintained,

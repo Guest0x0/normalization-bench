@@ -13,7 +13,7 @@ let rec get_idx var vars =
     match vars with
     | var' :: _ when var' = var -> 0
     | _    :: vars'             -> get_idx var vars' + 1
-    | _                         -> failwith "NBE_Memo.Alpha.get_idx"
+    | _                         -> failwith "NBE_Named.get_idx"
 
 let rec of_term vars tm =
     match tm with
@@ -57,7 +57,7 @@ module ListEnv = struct
         | VVar var -> NVar var
         | VLam(env, var, body) ->
             let var' = fresh_var () in
-            NLam(var, quote @@ eval ((var, VVar var') :: env) body)
+            NLam(var', quote @@ eval ((var, VVar var') :: env) body)
         | VApp(func, arg) ->
             NApp(quote func, quote arg)
 
@@ -87,7 +87,7 @@ module TreeEnv = struct
         | VVar var -> NVar var
         | VLam(env, var, body) ->
             let var' = fresh_var () in
-            NLam(var, quote @@ eval (Env.add var (VVar var') env) body)
+            NLam(var', quote @@ eval (Env.add var (VVar var') env) body)
         | VApp(func, arg) ->
             NApp(quote func, quote arg)
 

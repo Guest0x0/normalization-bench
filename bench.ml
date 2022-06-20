@@ -14,6 +14,11 @@ let combinations = [
       ; "NBE.closure.list"
       ; "NBE.lazy"
       ; "AM.Crégut.CBV" ] );
+    ( "DBI-named"
+    , []
+    , [ "NBE.closure.list"
+      ; "NBE.named.list"
+      ; "NBE.named.tree" ] );
     ( "AM-variants"
     , [CBN]
     , [ "AM.Crégut.list"
@@ -26,7 +31,7 @@ let combinations = [
       ; "NBE.memo.v2"
       ; "NBE.memo.v3"
       ; "NBE.memo.v4"
-      ; "NBE.memo.alpha" ] );
+      ; "NBE.memo.named" ] );
     ( "compiled-normalize"
     , [NoLargeTerm]
     , [ "NBE.closure.list"

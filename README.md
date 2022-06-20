@@ -66,6 +66,10 @@ which includes:
 - `NBE.closure.list|tree` (in `NBE_Closure.ml`):
 NBE, using raw lambda terms to represent closures.
 Come with two flavors of environment data structure too
+- `NBE.named.list|tree` (in `NBE_Named.ml`):
+NBE, but using a named term representation instead of de Brujin index.
+Uses a global counter for fresh variable generation.
+Environment is represented as association list or OCaml's AVL tree (`Map`)
 - `NBE.memo.v1|v2|v3|v4` (in `NBE_Memo.ml`)
 Same as `NBE.closure.list`,
 but each value memorizes the term it quotes back to (at some level).
@@ -78,9 +82,8 @@ for the level and the term respectively (the term slot holds garbage initiallly)
 and hence has only one layer of indirection.
 `v4` is the same as `v3`, but do not cache leaf nodes (variables).
 Turns out that this dirty memory layout optimizations have a significnat effect.
-- `NBE.memo.alpha` (in `NBE_Memo.ml`)
-Same as `NBE.memo.v3`, but uses a named term representation
-and fresh variables are generated via a global cell.
+- `NBE.memo.named` (in `NBE_Memo.ml`)
+Same as `NBE.memo.v3`, but uses a named term representation.
 Don't have cache-miss issue.
 - `NBE.pushenter` (in `NBE_Pushenter.ml`)
 NBE with a push/enter style uncurrying.

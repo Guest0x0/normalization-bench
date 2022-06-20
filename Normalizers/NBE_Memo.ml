@@ -201,7 +201,7 @@ module V4 = struct
 end
 
 
-module Alpha = struct
+module Named = struct
     type named_term =
         | NVar of int
         | NLam of int * named_term
@@ -214,7 +214,7 @@ module Alpha = struct
         match vars with
         | var' :: _ when var' = var -> 0
         | _    :: vars'             -> get_idx var vars' + 1
-        | _                         -> failwith "NBE_Memo.Alpha.get_idx"
+        | _                         -> failwith "NBE_Memo.Named.get_idx"
 
     let rec of_term vars tm =
         match tm with
@@ -297,6 +297,6 @@ let normalizer_v1 = Normalizer.simple_normalizer V1.normalize
 let normalizer_v2 = Normalizer.simple_normalizer V2.normalize
 let normalizer_v3 = Normalizer.simple_normalizer V3.normalize
 let normalizer_v4 = Normalizer.simple_normalizer V4.normalize
-let normalizer_alpha =
-    let open Alpha in
+let normalizer_named =
+    let open Named in
     Normalizer.normalizer_with_alt_term_rep ~of_term ~normalize ~to_term

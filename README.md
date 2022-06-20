@@ -226,6 +226,22 @@ it is tested here too.
 ![](data/NBE-variants/self_interp_size.png)
 
 
+### DBI v.s. named
+`NBE.closure.list` is compared against two normalizers
+using term with named variable instead of de Brujin index.
+These two normalizers use association list and AVL tree to represent
+environment in respect:
+
+![](data/DBI-named/church_add.png)
+![](data/DBI-named/church_mul.png)
+![](data/DBI-named/exponential.png)
+![](data/DBI-named/parigot_add.png)
+![](data/DBI-named/iterated_id_L.png)
+![](data/DBI-named/iterated_id_R.png)
+![](data/DBI-named/random.png)
+![](data/DBI-named/self_interp_size.png)
+
+
 ### abstract machine variants
 Three variants of the CBN strongly reducin Krivine machine is tested.
 The difference lies in the use of different data structures
@@ -238,7 +254,6 @@ to represent the control stack.
 ![](data/AM-variants/iterated_id_L.png)
 ![](data/AM-variants/iterated_id_R.png)
 ![](data/AM-variants/random.png)
-![](data/AM-variants/self_interp_size.png)
 
 
 ## memorized NBE
@@ -382,6 +397,24 @@ than weak machines
 with additional support for open terms).
 I think investigating in this direction would be very interesting.
 
+### DBI v.s. named
+From the results,
+de Brujin index is slightly faster than named terms.
+This is probably due to caused by faster environment lookup.
+Under the conjecture that
+"recently defined bound variables are accessed most frequently",
+DBI may need less steps on average to lookup bound variables.
+`List.nth` is also faster than `List.assoc` in terms of constant overhead.
+
+When using named term representation,
+linked list is still more performant than balanced trees.
+This is probably due to smaller constant overhead
+and better complexity on insertion.
+Again, the length of the environment of bound variables is small in the benchmarks here.
+So the setting of the benchmarks may be unfair to balanced trees.
+But in practice, the number of bound variables is usually small, too.
+
+
 ### abstract machine variants
 The three tested abstract machine variants are CBN,
 strongly reducing Krivine machine.
@@ -459,7 +492,7 @@ in these two benchmarks.
 The rest of the benchmarks don't have such pervasive sharing,
 and can be seen as a test of the overhead of memorization.
 Before inspecting the result,
-let's first discuss the difference between `v1`, `v2` and `v3` of the memorized algorithms.
+let's first discuss the difference between `v1`, `v2`, `v3` and `v4` of the memorized algorithms.
 The three differs only in the representation of values:
 
     (* v1 *)
@@ -503,6 +536,23 @@ The three differs only in the representation of values:
               ; mutable syn : term
               ; func        : value3
               ; arg         : value3 }
+              
+    (* v4 *)
+    (* When there's no cache available,
+      [lvl = -1] and [syn] holds some garbage value *)
+    type value4 =
+        | VLvl of int (* leaf nodes not cached *)
+        | VLam of
+              { mutable lvl : int
+              ; mutable syn : term
+              ; env         : value4 list
+              ; body        : term }
+        | VApp of
+              { mutable lvl : int
+              ; mutable syn : term
+              ; func        : value4
+              ; arg         : value4 }
+
 
 The three are equivalent in terms of functionality.
 However, in OCaml, all records and ADT with extra data is stored as blocks,
@@ -519,7 +569,7 @@ In `v2`, the access pattern is:
 1. inspect the cache, no indirection since it is stored in `value2` directly
 1. on cache miss, inspect `value2_rep`, one indirection
 
-In `v3`, the access pattern is:
+In `v3` and `v4` (take `v3` as an example), the access pattern is:
 
 1. inspect `value3` and fetch attached data, one indirection
 1. inspect the cache, no indirection since it is stored in each branch
@@ -528,7 +578,7 @@ of `value3` directly
 since `value3` is already inspected
 
 So counting the number of indirections when accessing a value on quoting,
-the result is `v3 (1) < v2(1 ~ 2) < v1(2 ~ 3)`.
+the result is `v3 = v4 (1) < v2(1 ~ 2) < v1(2 ~ 3)`.
 And this is in exactly agreement with the actual time consumed by these algorithms.
 `v3` is always the fasted, `v1` is always the slowest, with `v2` in the middle.
 
@@ -539,6 +589,18 @@ this makes them much less attractive.
 However, `v3`, with its optimized data layout,
 has a very small constant overhead compared to `NBE.closure.list`.
 Now its dramatic speedup in extreme cases become much more attractive.
+
+Next, let's compare `v3` and `v4`.
+`v3` is faster than `v4` in general,
+this indicate that caching leaf nodes can actually improve performance,
+although it seems to require more work (maintaining the cache)
+when processing leaf nodes.
+I think `v4` is slower because it requires more allocation:
+the leaf nodes are not shared.
+This may also indicate that allocation
+accounts for a significant part of the total time consumed.
+
+
 
 ### compiled NBE
 Normalizers derived by reusing the OCaml compiler is tested here.

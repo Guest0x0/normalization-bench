@@ -94,8 +94,51 @@ module TreeEnv = struct
     let normalize tm = quote (eval Env.empty tm)
 end
 
+module ADTEnv = struct
+    type value =
+        | VVar of int
+        | VLam of env * int * named_term
+        | VApp of value * value
+
+    and env =
+        | Nil
+        | Cons of int * value * env
+
+
+    let rec lookup k env =
+        match env with
+        | Cons(k', v, _) when k' = k -> v
+        | Cons(_, _, env')           -> lookup k env'
+        | Nil                        -> failwith "NBE_Named.ADTEnv.lookup"
+
+    let rec eval env ntm =
+        match ntm with
+        | NVar var        -> lookup var env
+        | NLam(var, body) -> VLam(env, var, body)
+        | NApp(func, arg) ->
+            match eval env func with
+            | VLam(env', var, body) ->
+                eval (Cons(var, eval env arg, env')) body
+            | vfunc ->
+                VApp(vfunc, eval env arg)
+
+    let rec quote v =
+        match v with
+        | VVar var -> NVar var
+        | VLam(env, var, body) ->
+            let var' = fresh_var () in
+            NLam(var', quote @@ eval (Cons(var, VVar var', env)) body)
+        | VApp(func, arg) ->
+            NApp(quote func, quote arg)
+
+    let normalize tm = quote (eval Nil tm)
+end
+
 let normalizer_list = Normalizer.normalizer_with_alt_term_rep
         ~of_term ~normalize:ListEnv.normalize ~to_term
 
 let normalizer_tree = Normalizer.normalizer_with_alt_term_rep
         ~of_term ~normalize:TreeEnv.normalize ~to_term
+
+let normalizer_adt = Normalizer.normalizer_with_alt_term_rep
+        ~of_term ~normalize:ADTEnv.normalize ~to_term

@@ -18,7 +18,8 @@ let combinations = [
     , []
     , [ "NBE.closure.list"
       ; "NBE.named.list"
-      ; "NBE.named.tree" ] );
+      ; "NBE.named.tree"
+      ; "NBE.named.ADT" ] );
     ( "AM-variants"
     , [CBN]
     , [ "AM.Crégut.list"

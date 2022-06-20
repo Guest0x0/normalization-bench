@@ -66,10 +66,12 @@ which includes:
 - `NBE.closure.list|tree` (in `NBE_Closure.ml`):
 NBE, using raw lambda terms to represent closures.
 Come with two flavors of environment data structure too
-- `NBE.named.list|tree` (in `NBE_Named.ml`):
+- `NBE.named.list|tree|ADT` (in `NBE_Named.ml`):
 NBE, but using a named term representation instead of de Brujin index.
 Uses a global counter for fresh variable generation.
-Environment is represented as association list or OCaml's AVL tree (`Map`)
+Environment is represented as association list,
+OCaml's AVL tree (`Map`),
+or a specialized ADT with the pairs in association list inlined.
 - `NBE.memo.v1|v2|v3|v4` (in `NBE_Memo.ml`)
 Same as `NBE.closure.list`,
 but each value memorizes the term it quotes back to (at some level).
@@ -414,6 +416,10 @@ Again, the length of the environment of bound variables is small in the benchmar
 So the setting of the benchmarks may be unfair to balanced trees.
 But in practice, the number of bound variables is usually small, too.
 
+Inlining pairs in association list should in theory reduces
+some indirectons when looking up variables.
+And the results shows that it indeed brings some slight boost.
+This is in agreement with the results of abstract machine variants below.
 
 ### abstract machine variants
 The three tested abstract machine variants are CBN,

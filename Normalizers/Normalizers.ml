@@ -9,6 +9,7 @@ let normalizers = [
     "NBE.closure.tree", NBE_Closure.normalizer_tree;
     "NBE.named.list"  , NBE_Named.normalizer_list;
     "NBE.named.tree"  , NBE_Named.normalizer_tree;
+    "NBE.named.ADT"   , NBE_Named.normalizer_adt;
     "NBE.memo.v1"     , NBE_Memo.normalizer_v1;
     "NBE.memo.v2"     , NBE_Memo.normalizer_v2;
     "NBE.memo.v3"     , NBE_Memo.normalizer_v3;

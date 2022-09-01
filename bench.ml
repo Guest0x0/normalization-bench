@@ -91,24 +91,6 @@ let benches = [
         in
         fun size -> (Lam(src size), Some(Lam(expected size)))
     );
-    ( "iterated_id_L"
-    , [NoLargeTerm]
-    , [10000; 25000; 50000; 75000; 100000]
-    , let rec loop size =
-          if size <= 1
-          then id
-          else App(loop (size - 1), id)
-        in fun size -> (loop size, Some id)
-    );
-    ( "iterated_id_R"
-    , [NoLargeTerm]
-    , [10000; 25000; 50000; 75000; 100000]
-    , let rec loop size =
-          if size <= 1
-          then id
-          else App(id, loop (size - 1))
-        in fun size -> (loop size, Some id)
-    );
     ( "random"
     , []
     , [1000; 2000; 3000; 4000; 5000; 6000; 7000; 8000]

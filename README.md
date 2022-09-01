@@ -163,8 +163,6 @@ Let `r(0) = x`, `r(n+1) = r(n) r(n)`,
 - `parigot_add`: adding two numerals in parigot encoding [[7]](#7).
 I read about parigot encoding in [[8]](#8).
 This is perhaps a practical example of terms of exponentially growing size.
-- `iterated_id_L`: `( ... ((id id) id) ... )`
-- `iterated_id_R`: `( ... (id (id id)) ... )`
 - `random`: randomly generated (uniformly distributed) lambda terms.
 The generation algorithm comes from [[6]](#6).
 First, a table of the total number of lambda terms of different sizes
@@ -205,8 +203,6 @@ emitting a beta reduction.
 ![](data/subst-NBE/church_mul.png)
 ![](data/subst-NBE/exponential.png)
 ![](data/subst-NBE/parigot_add.png)
-![](data/subst-NBE/iterated_id_L.png)
-![](data/subst-NBE/iterated_id_R.png)
 ![](data/subst-NBE/random.png)
 ![](data/subst-NBE/self_interp_size.png)
 
@@ -222,8 +218,6 @@ it is tested here too.
 ![](data/NBE-variants/church_mul.png)
 ![](data/NBE-variants/exponential.png)
 ![](data/NBE-variants/parigot_add.png)
-![](data/NBE-variants/iterated_id_L.png)
-![](data/NBE-variants/iterated_id_R.png)
 ![](data/NBE-variants/random.png)
 ![](data/NBE-variants/self_interp_size.png)
 
@@ -238,8 +232,6 @@ environment in respect:
 ![](data/DBI-named/church_mul.png)
 ![](data/DBI-named/exponential.png)
 ![](data/DBI-named/parigot_add.png)
-![](data/DBI-named/iterated_id_L.png)
-![](data/DBI-named/iterated_id_R.png)
 ![](data/DBI-named/random.png)
 ![](data/DBI-named/self_interp_size.png)
 
@@ -253,8 +245,6 @@ to represent the control stack.
 ![](data/AM-variants/church_mul.png)
 ![](data/AM-variants/exponential.png)
 ![](data/AM-variants/parigot_add.png)
-![](data/AM-variants/iterated_id_L.png)
-![](data/AM-variants/iterated_id_R.png)
 ![](data/AM-variants/random.png)
 
 
@@ -267,8 +257,6 @@ See the conclusion part for more details on this three variants.
 ![](data/NBE-memo/church_mul.png)
 ![](data/NBE-memo/exponential.png)
 ![](data/NBE-memo/parigot_add.png)
-![](data/NBE-memo/iterated_id_L.png)
-![](data/NBE-memo/iterated_id_R.png)
 ![](data/NBE-memo/random.png)
 ![](data/NBE-memo/self_interp_size.png)
 
@@ -341,11 +329,6 @@ while NBE avoid these unnecessary allocations altogether
 by passing an environment,
 deferring and merging substitutions.
 
-Surprisingly, CAS does outperform NBE is one benchmark: `iterated_id_L`.
-This is probably due to this benchmark being so simple that CAS introduces
-no overhead,
-while NBE suffers from a constant overhead due to closure allocation.
-
 
 ### NBE variants
 The various different NBE variants have very similar performance:
@@ -355,7 +338,7 @@ However, some small but stable difference can still be observed.
 Let's first focus on the representation of environment.
 Comparing `NBE.HOAS.list|tree|skew`,
 one find that, surprisingly, `list` is always the most performant.
-For some `church_add|mul`, `exponetial`, `iterated_id_L|R`,
+For `church_add|mul` and `exponetial`,
 the enviroment is always very shallow, so this result makes sense.
 But the difference persists in `parigot_add`, `random` and `self_interp_size`.
 My interpretation of this result is:

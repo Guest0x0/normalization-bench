@@ -123,6 +123,21 @@ with eval/apply style n-ary function optimization for functions with 1~5 params.
 The generated OCaml program can be compiled in bytecode, native,
 or optimized native mode.
 I got the idea from [[12]](#12).
+
+- `NBE.HC.X`: basic NBE normalizers with hash-consing or other sharing techniques.
+The variants are:
+  - `NBE.HC.idx.o`: cache de Brujin index terms in the output term,
+  via pre-allocating an array of all DBI nodes of size smaller than 10000,
+  and reuse these pre-allocated terms.
+  - `NBE.HC.idx`: similar to `NBE.HC.idx.o`, but input terms are cached as well.
+  - `NBE.HC.lvlidx.o`: cache de Brujin index terms in the output term
+  as well as de Brujin levels in values, also via pre-allocating an array of all DBI/DBL nodes.
+  - `NBE.HC.lvlidx`: similar to `NBE.HC.lvl.o`, but input terms are cached as well.
+  - `NBE.HC.hashcons`: complete hash-consing term representation.
+  Structurally equal terms are always equal physically.
+  The implementation strategy comes from [[14]](#14),
+  but I use OCaml's builtin hash table, so the implementation may be slower than [[14]](#14).
+
 - (TODO) some bytecode based approaches.
 For example the modified ZAM used in Coq [[3]](#3)
 
@@ -236,18 +251,6 @@ environment in respect:
 ![](data/DBI-named/self_interp_size.png)
 
 
-### abstract machine variants
-Three variants of the CBN strongly reducin Krivine machine is tested.
-The difference lies in the use of different data structures
-to represent the control stack.
-
-![](data/AM-variants/church_add.png)
-![](data/AM-variants/church_mul.png)
-![](data/AM-variants/exponential.png)
-![](data/AM-variants/parigot_add.png)
-![](data/AM-variants/random.png)
-
-
 ## memorized NBE
 Three variants of NBE with memorization for the quoted term is tested,
 compared against `NBE.closure.list`.
@@ -259,6 +262,32 @@ See the conclusion part for more details on this three variants.
 ![](data/NBE-memo/parigot_add.png)
 ![](data/NBE-memo/random.png)
 ![](data/NBE-memo/self_interp_size.png)
+
+
+## hash-consing term representation
+Variants of `NBE.closure.list` with different degrees of structure-sharing is tested here.
+No memorization is done via the sharing,
+so the main benefit of these sharing is reducing memory requirement and allocation.
+
+![](data/NBE-hashcons/church_add.png)
+![](data/NBE-hashcons/church_mul.png)
+![](data/NBE-hashcons/exponential.png)
+![](data/NBE-hashcons/parigot_add.png)
+![](data/NBE-hashcons/random.png)
+![](data/NBE-hashcons/self_interp_size.png)
+
+
+### abstract machine variants
+Three variants of the CBN strongly reducin Krivine machine is tested.
+The difference lies in the use of different data structures
+to represent the control stack.
+
+![](data/AM-variants/church_add.png)
+![](data/AM-variants/church_mul.png)
+![](data/AM-variants/exponential.png)
+![](data/AM-variants/parigot_add.png)
+![](data/AM-variants/random.png)
+
 
 
 ## compiled NBE
@@ -286,7 +315,8 @@ is as follows:
 ![](data/compiled-compile/random.png)
 
 
-## Conclusion
+
+## Analysis and Conclusion
 
 ### The imprecision of the results here
 Before proceeding with drawing my personal conclusion,
@@ -405,47 +435,6 @@ Inlining pairs in association list should in theory reduces
 some indirectons when looking up variables.
 And the results shows that it indeed brings some slight boost.
 This is in agreement with the results of abstract machine variants below.
-
-### abstract machine variants
-The three tested abstract machine variants are CBN,
-strongly reducing Krivine machine.
-Since they are CBN, they are not intended to be used in practice.
-However, I think the result here scale to other abstract machines,
-such as the strongly reducing CBV machine above.
-
-Before looking at the performance of the results,
-I would like to first explain the details of the three abstract machines.
-All three abstract machines are the CBN, strongly reducing Krivine machine.
-This abstract machine contains three components,
-a code representing current control,
-an environment for bound variables that may be captured,
-and a global stack holding continuations.
-The environment is represented as lists in all three machines.
-The difference lies in the representation of the continuation stack.
-In `AM.Crégut.list`, it is represented as a list of continuations.
-In `AM.Crégut.arr`, it is represented as a large, fixed size array of continuations.
-In `AM.Crégut.ADT`, it is represented as a ADT,
-with the "tail" part of the continuation stack inlined into every type of continuation.
-
-Now, the access pattern on the stack during the execution of the abstract machine
-is also worth mentioning.
-Basically, the machine will look at the first frame in the continuation
-stack (or its absence) on every transition,
-and decide its behavior accordingly.
-
-With the above information in mind,
-it is now easy to see why `ADT` is the most performant in most cases.
-In `list`, each transition requires inspecting whether the list is empty
-(one indirection) + inspecting the first frame of the stack when it is present
-(one indirection).
-In `arr`, each transition requires a bound check plus one indirection
-inspecting the first stack frame.
-Finally, in `ADT`, all these can be done by inspecting the ADT
-(one indirection).
-
-Given that the above operation must be repeated on every machine transition,
-I think the ADT implementation of stack
-should be favored for abstract machine based normalizers.
 
 
 ### memorized NBE
@@ -588,9 +577,79 @@ although it seems to require more work (maintaining the cache)
 when processing leaf nodes.
 I think `v4` is slower because it requires more allocation:
 the leaf nodes are not shared.
-This may also indicate that allocation
-accounts for a significant part of the total time consumed.
+The result of normalizers with hash-consing term representation also support this explanation.
 
+
+
+## hash-consing term representation
+The complete hash-consing normalizer has a significant overhead,
+except in benchmarks with extreme sharing (`exponential` and `parigot-add`).
+So it is probably not suitable for general purpose NBE.
+
+However, the variants with sharing on only leaf nodes (DBI/DBL) are more interesting.
+`NBE.HC.idx|idx.o|lvlidx|lvlidx.o` outperform `NBE.closure.list` by a small fraction
+in all benchmarks except for `self_interp_size`.
+This indicates that sharing leaf nodes is quite a reliable measure to slightly improve
+the performance of NBE.
+This is probably due to the low (almost none) overhead of sharing leaf nodes.
+
+Next, the different degrees of leaf node sharing seem to have very close performance.
+However, variants with or without sharing on input terms
+(`NBE.HC.idx|lvlidx` or `NBE.HC.(idx|lvlidx).o`) have closer performance.
+Notice that sometimes *more* sharing makes normalization *slower*,
+I conjectured that this is due to locality:
+pre-allocated leaf nodes are further away from non-leaf nodes allocated later,
+resulting in lower cache-hit rate when accessing leaf and non-leaf nodes alternatingly.
+This may also explain why `NBE.closure.list` and `NBE.HC.idx.o` are faster in `self_interp_size`:
+when inspecting values, normalizers with shared DBL nodes are slower due to worse locality.
+
+There is one approach that will dominate all these leaf-sharing approaches though:
+the best performance can be delivered if the compiler can natively represent leaf nodes as integers.
+However, I am not sure whether this is possible in OCaml.
+In other languages where pointers and integers cannot be distinguished at runtime,
+this may be even harder.
+
+
+### abstract machine variants
+The three tested abstract machine variants are CBN,
+strongly reducing Krivine machine.
+Since they are CBN, they are not intended to be used in practice.
+However, I think the result here scale to other abstract machines,
+such as the strongly reducing CBV machine above.
+
+Before looking at the performance of the results,
+I would like to first explain the details of the three abstract machines.
+All three abstract machines are the CBN, strongly reducing Krivine machine.
+This abstract machine contains three components,
+a code representing current control,
+an environment for bound variables that may be captured,
+and a global stack holding continuations.
+The environment is represented as lists in all three machines.
+The difference lies in the representation of the continuation stack.
+In `AM.Crégut.list`, it is represented as a list of continuations.
+In `AM.Crégut.arr`, it is represented as a large, fixed size array of continuations.
+In `AM.Crégut.ADT`, it is represented as a ADT,
+with the "tail" part of the continuation stack inlined into every type of continuation.
+
+Now, the access pattern on the stack during the execution of the abstract machine
+is also worth mentioning.
+Basically, the machine will look at the first frame in the continuation
+stack (or its absence) on every transition,
+and decide its behavior accordingly.
+
+With the above information in mind,
+it is now easy to see why `ADT` is the most performant in most cases.
+In `list`, each transition requires inspecting whether the list is empty
+(one indirection) + inspecting the first frame of the stack when it is present
+(one indirection).
+In `arr`, each transition requires a bound check plus one indirection
+inspecting the first stack frame.
+Finally, in `ADT`, all these can be done by inspecting the ADT
+(one indirection).
+
+Given that the above operation must be repeated on every machine transition,
+I think the ADT implementation of stack
+should be favored for abstract machine based normalizers.
 
 
 ### compiled NBE
@@ -644,6 +703,7 @@ and would be very interesting to investigate.
 However, such approach also makes implementation harder.
 
 
+
 ### Personal thoughts on choice of normalizer
 Normalization is one of the most important parts of a dependent type checker.
 So which normalizer to choose for your next dependently typed language?
@@ -679,6 +739,9 @@ This can be observed from the benchmarks of
 NBE with different environment representation,
 different value layouts of memorized NBE,
 and different stack representations of strongly reducing abstract machine.
+Also, term representation with sharing can reduce allocation and improve performance too.
+However, a full hash-consing implementation's overhead can be high.
+Caching only leaf nodes seem to be a good balance.
 
 In spite of the efficiency of `NBE.closure.list`,
 some normalizers do have unique characteristics that may be desirable.
@@ -738,3 +801,6 @@ dependent type checking is definitely a very interesting topic.
 
 <a id="13">[13]</a>
 <https://arxiv.org/pdf/1701.08186.pdf>
+
+<a id="14">[14]</a>
+<https://www.lri.fr/~filliatr/ftp/publis/hash-consing2.pdf>

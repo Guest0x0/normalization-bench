@@ -50,6 +50,14 @@ let combinations = [
       ; "compiled.evalapply.byte.C"
       ; "compiled.evalapply.native.C"
       ; "compiled.evalapply.O2.C" ] );
+    ( "NBE-hashcons"
+    , []
+    , [ "NBE.closure.list"
+      ; "NBE.HC.idx"
+      ; "NBE.HC.idx.o"
+      ; "NBE.HC.lvlidx"
+      ; "NBE.HC.lvlidx.o"
+      ; "NBE.HC.hashcons" ] );
 ]
 
 let benches = [

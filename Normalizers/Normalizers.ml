@@ -17,6 +17,11 @@ let normalizers = [
     "NBE.memo.v3"     , NBE_Memo.normalizer_v3;
     "NBE.memo.v4"     , NBE_Memo.normalizer_v4;
     "NBE.memo.named"  , NBE_Memo.normalizer_named;
+    "NBE.HC.idx"      , NBE_HashConsing.normalizer_cache_index;
+    "NBE.HC.idx.o"    , NBE_HashConsing.normalizer_cache_index_o;
+    "NBE.HC.lvlidx"   , NBE_HashConsing.normalizer_cache_level_index;
+    "NBE.HC.lvlidx.o" , NBE_HashConsing.normalizer_cache_level_index_o;
+    "NBE.HC.hashcons" , NBE_HashConsing.normalizer_hashcons;
     "AM.Crégut.list"  , AbstractMachine.normalizer_list;
     "AM.Crégut.ADT"   , AbstractMachine.normalizer_adt;
     "AM.Crégut.arr"   , AbstractMachine.normalizer_arr;

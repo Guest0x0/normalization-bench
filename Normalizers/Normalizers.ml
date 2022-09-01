@@ -7,6 +7,8 @@ let normalizers = [
     "NBE.HOAS.skew"   , NBE_HOAS.normalizer_skew;
     "NBE.closure.list", NBE_Closure.normalizer_list;
     "NBE.closure.tree", NBE_Closure.normalizer_tree;
+    "NBE.lazy"        , NBE_Lazy.normalizer;
+    "NBE.pushenter"   , NBE_Pushenter.normalizer;
     "NBE.named.list"  , NBE_Named.normalizer_list;
     "NBE.named.tree"  , NBE_Named.normalizer_tree;
     "NBE.named.ADT"   , NBE_Named.normalizer_adt;
@@ -15,8 +17,6 @@ let normalizers = [
     "NBE.memo.v3"     , NBE_Memo.normalizer_v3;
     "NBE.memo.v4"     , NBE_Memo.normalizer_v4;
     "NBE.memo.named"  , NBE_Memo.normalizer_named;
-    "NBE.lazy"        , NBE_Lazy.normalizer;
-    "NBE.pushenter"   , NBE_Pushenter.normalizer;
     "AM.Crégut.list"  , AbstractMachine.normalizer_list;
     "AM.Crégut.ADT"   , AbstractMachine.normalizer_adt;
     "AM.Crégut.arr"   , AbstractMachine.normalizer_arr;

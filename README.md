@@ -170,9 +170,13 @@ The generation algorithm comes from [[6]](#6).
 First, a table of the total number of lambda terms of different sizes
 can be generated using `count_terms.ml` (`dune exec ./count_terms.exe`)
 (WARNING: very very costly even for modest sizes (< 10000)).
+
 Then `gen_random_terms.ml` (`dune exec ./gen_random_terms.ml`)
 can be used to randomly generate uniformly distributed lambda terms
 of different sizes and number of free variables
+
+Due to the high cost of generating large term count table,
+50 terms are generated for each size to make the result term large enough.
 - `self_interp_size`: encode lambda terms using lambda terms with
 scott encoding, then calculate the size (in church numeral) of terms
 by structural recursion
@@ -187,10 +191,6 @@ The experimental data can be found in `data/<combination>/<benchmark>.dat`
 Here I present the result with gnuplot to give a more straightforward comparison.
 There is a 20 second timeout on every run.
 Results of runs that exceed this timeout are considered missing.
-
-Except for `random`,
-every run is repeated for 20 times.
-`random` is repeated on 100 different random terms.
 
 ### subst v.s. NBE
 The first combination compares Capture Avoiding Substitution (CAS)
@@ -364,9 +364,11 @@ My interpretation of this result is:
 So the `log(N)` cost of `tree`, or even the constant overhead of `skew`
 has a significant effect.
 - environment lookup is also a very common operation,
-but for shallow environments
+but for shallow environments,
+or under the conjecture that "recently defined bound variables are accessed most frequently",
+DBI may need less steps on average to lookup bound variables.
 (which IMO is also the most common case in practice,
-if defined variables are stored separatedly),
+if top-level defined variables are stored separatedly),
 the `O(N)` cost of `list` is not that terrible,
 and the constant overhead of `tree` and `skew` is not negligible.
 
@@ -403,10 +405,10 @@ I think investigating in this direction would be very interesting.
 From the results,
 de Brujin index is slightly faster than named terms.
 This is probably due to caused by faster environment lookup.
-Under the conjecture that
-"recently defined bound variables are accessed most frequently",
-DBI may need less steps on average to lookup bound variables.
-`List.nth` is also faster than `List.assoc` in terms of constant overhead.
+The association list in `NBE.named.list`
+and the list in `NBE.closure.list` should always have the same order.
+So the steps needed to access each variable should be identical.
+However, `List.nth` is faster than `List.assoc` in terms of constant overhead.
 
 When using named term representation,
 linked list is still more performant than balanced trees.
@@ -586,7 +588,7 @@ since `value3` is already inspected
 So counting the number of indirections when accessing a value on quoting,
 the result is `v3 = v4 (1) < v2(1 ~ 2) < v1(2 ~ 3)`.
 And this is in exactly agreement with the actual time consumed by these algorithms.
-`v3` is always the fasted, `v1` is always the slowest, with `v2` in the middle.
+`v3` is always the fastest, `v1` is always the slowest, with `v2` in the middle.
 
 From the results, `v1` and `v2` has a significant constant overhead
 compared to `NBE.closure.list`.
@@ -626,12 +628,13 @@ is defined.
 In the multi-ary constructors, native n-ary functions of OCaml is used.
 
 First, let's look at normalization speed.
-Surprisingly, `NBE.closure.list` is outperforms bytecode normalizers,
-and has similar or even sometimes better performance compared to native normalizers.
-This may reveals that traversing source term during evaluation is not a performance critical part of NBE,
-instead calling functions is.
-So `NBE.closure.list`, being natively compiled itself,
-outperforms bytecode compilation and is comparable to native code compilation.
+`NBE.closure.list` outperforms bytecode normalizers,
+This is probably due to the inefficiency of bytecode interpretation,
+as `NBE.closure.list` is natively compiled itself,
+and compilation to OCaml only save up the "source syntax tree traversing" part of NBE.
+
+`NBE.closure.list` is competible with native normalizers,
+only slightly slower in some benchmarks.
 Also, O2 optimization seems irrelevant on the generated OCaml source code.
 This is reasonable, as the generated code has very simple structure
 and little room for optimization.

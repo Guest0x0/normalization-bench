@@ -5,6 +5,10 @@ let apply f args = List.fold_left (fun f a -> App(f, a)) f args
 
 let id = Lam(Idx 0)
 
+
+let combine_terms tms = Lam(apply (Idx 0) tms)
+
+
 let rec church_aux = function
     | 0 -> Idx 0
     | n -> App(Idx 1, church_aux (n - 1))

@@ -57,29 +57,26 @@ let benches = [
     , [NoLargeTerm]
     , [10000; 25000; 50000; 75000; 100000; 200000; 300000; 400000]
     , fun size ->
-          List.init 20 @@ Fun.const
-              ( apply church_add [church size; church size]
-              , Option.some @@ church (size + size) )
+          ( apply church_add [church size; church size]
+          , Option.some @@ church (size + size) )
     );
     ( "church_mul"
     , []
-    , [80; 100; 120; 140; 160; 180; 200; 220; 240]
+    , [120; 140; 160; 180; 200; 220; 240; 260; 280; 300; 320]
     , fun size ->
-          List.init 20 @@ Fun.const
-              ( apply church_mul [church size; church size]
-              , Option.some @@ church (size * size) )
+        ( apply church_mul [church size; church size]
+        , Option.some @@ church (size * size) )
     );
     ( "parigot_add"
     , []
     , [5; 6; 7; 8; 9; 10; 11; 12]
     , fun size ->
-          List.init 1 @@ Fun.const
-              ( App(App(parigot_add, parigot_shared size), parigot_shared size)
-              , Option.some @@ parigot (size + size) )
+          ( App(App(parigot_add, parigot_shared size), parigot_shared size)
+          , Option.some @@ parigot (size + size) )
     );
     ( "exponential"
     , []
-    , [18; 19; 20; 21; 22; 23]
+    , [18; 19; 20; 21; 22; 23; 24]
     , let rec src size =
           if size <= 0
           then Idx 0
@@ -92,8 +89,7 @@ let benches = [
                 let tm = expected (size - 1) in
                 App(tm, tm)
         in
-        fun size -> List.init 20 @@ Fun.const
-                (Lam(src size), Some(Lam(expected size)))
+        fun size -> (Lam(src size), Some(Lam(expected size)))
     );
     ( "iterated_id_L"
     , [NoLargeTerm]
@@ -102,7 +98,7 @@ let benches = [
           if size <= 1
           then id
           else App(loop (size - 1), id)
-        in fun size -> List.init 20 @@ Fun.const (loop size, Some id)
+        in fun size -> (loop size, Some id)
     );
     ( "iterated_id_R"
     , [NoLargeTerm]
@@ -111,24 +107,22 @@ let benches = [
           if size <= 1
           then id
           else App(id, loop (size - 1))
-        in fun size -> List.init 20 @@ Fun.const (loop size, Some id)
+        in fun size -> (loop size, Some id)
     );
     ( "random"
     , []
     , [1000; 2000; 3000; 4000; 5000; 6000; 7000; 8000]
     , fun size ->
           let file = open_in ("data/randterm" ^ string_of_int size) in
-          List.init 99 (fun _ -> deserialize file, None)
+          (Common.Terms.combine_terms (List.init 50 (fun _ -> deserialize file)), None)
     );
     ( "self_interp_size"
     , [CBN; NoLargeTerm]
-    , [1000; 2000; 3000; 4000; 5000]
+    , [1000; 2000; 3000; 4000; 5000; 6000]
     , fun size ->
         let tm = church size in
-        List.init 20 @@ Fun.const (
-            App(church_lam_size, encode_term tm),
-            Some(church (term_size tm))
-        )
+        ( App(church_lam_size, encode_term tm)
+        , Some(church (term_size tm)) )
     );
 ]
 
@@ -170,4 +164,5 @@ let _ =
             List.find (fun (name, _, _, _) -> name = bench) benches
         in
         let size = int_of_string Sys.argv.(3) in
-        normalizer.run (terms size)
+        let tm, expected = terms size in
+        normalizer.run tm expected

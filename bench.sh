@@ -14,7 +14,7 @@ for combi in $($cmd list-combinations); do
         for size in $($cmd list-sizes $bench); do
             if [ "$bench" = "random" ]; then
                 echo "generating random terms of size $size"
-                dune exec ./gen_random_terms.exe $size 0 100 data/randterm$size data/term_counts
+                dune exec ./gen_random_terms.exe $size 0 51 data/randterm$size data/term_counts
             fi
             echo "size $size"
             echo -n "$size" >>data/$combi/$bench.dat
